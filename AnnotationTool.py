@@ -18,6 +18,7 @@ import numpy as np
 
 from objectclassmanager import ObjectClassManager
 from toolbar import Toolbar
+from interactivebox import InteractiveBox
 
 class AnnotationTool(object):
     
@@ -313,13 +314,16 @@ class AnnotationTool(object):
         self.canvas.create_image(0, 0, anchor=tk.NW, image=pil_img)
         
         for i, label in enumerate(self.annotations[self.current_file].bbox):
-            self.canvas.create_rectangle(label[1], 
-                                  label[0],
-                                  label[3],
-                                  label[2],
-                                  outline=self.colorspace[label[-1]],
-                                  width=5)
-        
+            
+            left = label[1]
+            top = label[0]
+            right = label[3]
+            bottom = label[2]
+            color = self.colorspace[label[-1]]
+            
+            box = InteractiveBox(left, top, right, bottom, color)
+            box.draw_box(self, i)
+            
         # Only allow bounding boxes to be drawn if they can be tied to a class
         if len(self.class_list):        
             self.canvas.bind("<Button-1>",self._on_click)
@@ -347,6 +351,13 @@ class AnnotationTool(object):
         left = min(self.box_start[0], self.box_end[0])
         right = max(self.box_start[0], self.box_end[0])
         label = self.selected_class.get()
+        color = self.colorspace[self.selected_class.get()]
+        
+        box = InteractiveBox(left, top, right, bottom, color)
+        
+        self.canvas.delete(self.rect)
+        box.draw_box(self, len(self.annotations[self.current_file].bbox))
+        
         self.annotations[self.current_file].add_label(top, 
                                                       left, 
                                                       bottom, 

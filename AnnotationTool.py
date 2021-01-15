@@ -254,7 +254,9 @@ class AnnotationTool(object):
         
         if self.project_open:
             fileMenu.add_command(label="Import File", command=None)
-            fileMenu.add_command(label="Import Directory", command=None)        
+            fileMenu.add_command(label="Import Directory", command=None) 
+            fileMenu.add_command(label="Export Project to CSV", 
+                                  command=self._csv_exporter)
             fileMenu.add_separator()
         
         fileMenu.add_command(label="Quit", command=self._quit)
@@ -269,8 +271,7 @@ class AnnotationTool(object):
             toolMenu.add_command(label="Reset Image", 
                                  command=self._reset_image)
         
-            toolMenu.add_command(label="Export Project to CSV", 
-                                  command=self._csv_exporter)
+
 
     def _draw_object_class_manager(self):
         

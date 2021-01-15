@@ -336,7 +336,7 @@ class AnnotationTool(object):
         self.rect = self.canvas.create_rectangle(self.box_start[0], 
                                                  self.box_start[1], 
                                                  self.box_start[0]+1, 
-                                                 self.box_start[0]+1, 
+                                                 self.box_start[1]+1, 
                                                  width=5,
                                                  outline=color)
 

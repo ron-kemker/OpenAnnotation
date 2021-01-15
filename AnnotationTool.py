@@ -378,9 +378,8 @@ class AnnotationTool(object):
         self.img = self.img.transpose(rot)
                 
     def _reset_image(self):
-        idx = self.current_file
-        self.annotations[idx].label = []
-        self.annotations[idx].bbox = []
+        self.annotations[self.current_file].label = []
+        self.annotations[self.current_file].bbox = []
         self._draw_workspace()
         
 class Annotation(object):

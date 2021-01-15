@@ -24,11 +24,7 @@ class AnnotationTool(object):
     
     def __init__(self, file_ext = '.jpg'):
         '''
-        TODO: Network labeling capability
-        TODO: Store relative image position (vs absolute)
-        TODO: Include class object count
-        TODO: Resize box capability
-        TODO: ROI Tool
+
         Parameters
         ----------
         file_ext : TYPE, optional

@@ -2,7 +2,7 @@
 """
 Created on Thu Dec 31 09:26:18 2020
 
-@author: Master
+@author: Ronald Kemker
 """
 
 import tkinter as tk

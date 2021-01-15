@@ -29,7 +29,6 @@ class AnnotationTool(object):
         TODO: Include class object count
         TODO: Resize box capability
         TODO: ROI Tool
-        TODO: Selectable box deletion
         Parameters
         ----------
         file_ext : TYPE, optional
@@ -260,13 +259,15 @@ class AnnotationTool(object):
         
         fileMenu.add_command(label="Quit", command=self._quit)
         
-        
         if self.project_open:
 
             toolMenu = Menu(menu)
             menu.add_cascade(label="Tools", menu=toolMenu)
             toolMenu.add_command(label="Class Manager", 
                                  command=self._draw_object_class_manager)
+            
+            toolMenu.add_command(label="Reset Image", 
+                                 command=self._reset_image)
         
             toolMenu.add_command(label="Export Project to CSV", 
                                   command=self._csv_exporter)
@@ -373,7 +374,6 @@ class AnnotationTool(object):
                            self.box_end[0],
                            self.box_end[1])
 
-
     def _load_image_from_file(self):
         self.img = Image.open(self.file_list[self.current_file])
         
@@ -381,7 +381,12 @@ class AnnotationTool(object):
         
         rot = self.annotations[self.current_file].rotation
         self.img = self.img.transpose(rot)
-        
+                
+    def _reset_image(self):
+        idx = self.root_app.current_file
+        self.root_app.annotations[idx].label = []
+        self.root_app.annotations[idx].bbox = []
+        self.root_app._draw_workspace()
         
 class Annotation(object):
     

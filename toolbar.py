@@ -29,7 +29,6 @@ class Toolbar(object):
         self._draw_image_navigator()
         # self._draw_rotation_menu()
         self._delete_from_project_button()
-        self._reset_image_button()
         
         if len(self.root_app.class_list) > 0:
             self._draw_class_selection_menu()
@@ -162,20 +161,7 @@ class Toolbar(object):
     
         option_menu.grid(row=3, column=0)
         
-    def _reset_image_button(self):
-        button = Button(self.toolbar_frame,
-                            text="Reset Image",
-                            fg="black",
-                            command=self._reset_image,
-                            pady=10)
-        
-        button.grid(row=4, column=0, pady=5)        
-        
-    def _reset_image(self):
-        idx = self.root_app.current_file
-        self.root_app.annotations[idx].label = []
-        self.root_app.annotations[idx].bbox = []
-        self.root_app._draw_workspace()
+
 
 
 if __name__ == "__main__":

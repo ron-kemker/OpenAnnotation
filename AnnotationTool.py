@@ -6,15 +6,13 @@ Created on Thu Dec 31 09:26:18 2020
 """
 
 import tkinter as tk
-from tkinter import Frame, Label, Menu, Button, Entry, \
-    OptionMenu, StringVar, Canvas, Event
+from tkinter import Frame, Label, Menu, Button, Canvas
 from tkinter.filedialog import askopenfilename, asksaveasfilename, \
     askdirectory
-from PIL import ImageTk, Image, ImageOps
+from PIL import ImageTk, Image
 import glob
 import exif 
 import pickle
-import numpy as np
 
 from objectclassmanager import ObjectClassManager
 from toolbar import Toolbar
@@ -27,8 +25,8 @@ class AnnotationTool(object):
 
         Parameters
         ----------
-        file_ext : TYPE, optional
-            DESCRIPTION. The default is '.jpg'.
+        file_ext : STRING, optional
+            The file extension of the images being imported. The default is '.jpg'.
 
         Returns
         -------

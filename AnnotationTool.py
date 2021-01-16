@@ -202,7 +202,6 @@ class AnnotationTool(object):
                             command=self._quit)
         quit_button.grid(row=2, column=0, sticky='n', pady=2  )
 
-
     def _quit(self):
         
         if not self.saved:
@@ -228,7 +227,6 @@ class AnnotationTool(object):
         else:
             self.window.destroy()
         
-
     def _draw_menu(self):
         # Build File Menu
         menu = Menu(self.window)
@@ -265,8 +263,6 @@ class AnnotationTool(object):
             toolMenu.add_command(label="Reset Image", 
                                  command=self._reset_image)
         
-
-
     def _draw_object_class_manager(self):
         
         obj_mgr = ObjectClassManager(self)
@@ -309,6 +305,8 @@ class AnnotationTool(object):
         self.canvas.image = pil_img
         self.canvas.create_image(0, 0, anchor=tk.NW, image=pil_img)
         
+        self.boxes = []
+        
         for i, label in enumerate(self.annotations[self.current_file].bbox):
             
             left = label[1]
@@ -319,56 +317,128 @@ class AnnotationTool(object):
             
             box = InteractiveBox(left, top, right, bottom, color)
             box.draw_box(self, i)
+            self.boxes.append(box)
             
         # Only allow bounding boxes to be drawn if they can be tied to a class
         if len(self.class_list):        
             self.canvas.bind("<Button-1>",self._on_click)
-            self.canvas.bind("<B1-Motion>", self._on_move_press)
             self.canvas.bind("<ButtonRelease-1>",self._on_release)
+            self.canvas.bind("<B1-Motion>", self._on_move_press)
 
     def _csv_exporter(self):
         return
         
 
     def _on_click(self, event):
-        self.box_start = (event.x, event.y)
-        color = self.colorspace[self.selected_class.get()]
-        self.rect = self.canvas.create_rectangle(self.box_start[0], 
-                                                 self.box_start[1], 
-                                                 self.box_start[0]+1, 
-                                                 self.box_start[1]+1, 
-                                                 width=5,
-                                                 outline=color)
-
+        
+        self.clicked = (event.x, event.y)
+        
+        for i, box in enumerate(self.boxes):
+            if box.right_clicked(self.clicked[0], self.clicked[1]):
+                self.box_resize_mode = 'RIGHT'
+                self.resize_box_id = i
+                return
+            elif box.left_clicked(self.clicked[0], self.clicked[1]):
+                self.box_resize_mode = 'LEFT'
+                self.resize_box_id = i
+                return
+            elif box.top_clicked(self.clicked[0], self.clicked[1]):
+                self.box_resize_mode = 'TOP'
+                self.resize_box_id = i
+                return
+            elif box.bottom_clicked(self.clicked[0], self.clicked[1]):
+                self.box_resize_mode = 'BOTTOM'
+                self.resize_box_id = i
+                return
+        
+        self.box_resize_mode = 'NEW'
+        
     def _on_release(self, event):
         
-        top = min(self.box_start[1], self.box_end[1])
-        bottom = max(self.box_start[1], self.box_end[1])
-        left = min(self.box_start[0], self.box_end[0])
-        right = max(self.box_start[0], self.box_end[0])
-        label = self.selected_class.get()
-        color = self.colorspace[self.selected_class.get()]
-        
-        box = InteractiveBox(left, top, right, bottom, color)
-        
-        self.canvas.delete(self.rect)
-        box.draw_box(self, len(self.annotations[self.current_file].bbox))
-        
-        self.annotations[self.current_file].add_label(top, 
-                                                      left, 
-                                                      bottom, 
-                                                      right, 
-                                                      label)
+        if self.box_resize_mode == 'NEW':
+
+            top = min(self.clicked[1], event.y)
+            bottom = max(self.clicked[1], event.y)
+            left = min(self.clicked[0], event.x)
+            right = max(self.clicked[0], event.x)
+            label = self.selected_class.get()
+            color = self.colorspace[self.selected_class.get()]
+            
+            box = InteractiveBox(left, top, right, bottom, color)
+            
+            self.canvas.delete(self.rect)
+            del self.rect
+            box.draw_box(self, len(self.annotations[self.current_file].bbox))
+            
+            self.annotations[self.current_file].add_label(top, 
+                                                          left, 
+                                                          bottom, 
+                                                          right, 
+                                                          label)
+            
+        self._draw_workspace()
         self.saved = False
+        self.box_resize_mode = 'NEW'
         
     def _on_move_press(self, event):
-        self.box_end = (event.x, event.y)
-        self.canvas.coords(self.rect, 
-                           self.box_start[0], 
-                           self.box_start[1],
-                           self.box_end[0],
-                           self.box_end[1])
+        
+        if hasattr(self, 'resize_box_id'):
+            box_id = self.resize_box_id
+        
+        if self.box_resize_mode != 'NEW':
+            if hasattr(self.boxes[box_id],'close_button'):
+                self.boxes[box_id].close_button.destroy()
+               
+        if self.box_resize_mode == 'RIGHT':
+            self.canvas.coords(self.boxes[box_id].rect, 
+                   self.boxes[box_id].left, 
+                   self.boxes[box_id].top,
+                   event.x,
+                  self.boxes[box_id].bottom)
+            self.boxes[box_id].right = event.x
+            self.annotations[self.current_file].bbox[box_id][3] = event.x
+        elif self.box_resize_mode == 'LEFT':
+            self.canvas.coords(self.boxes[self.resize_box_id].rect, 
+                   event.x, 
+                   self.boxes[self.resize_box_id].top,
+                   self.boxes[self.resize_box_id].right,
+                   self.boxes[self.resize_box_id].bottom)
+            self.boxes[self.resize_box_id].left = event.x
+            self.annotations[self.current_file].bbox[box_id][1] = event.x
+        elif self.box_resize_mode == 'TOP':
+            self.canvas.coords(self.boxes[self.resize_box_id].rect, 
+                   self.boxes[self.resize_box_id].left, 
+                   event.y,
+                   self.boxes[self.resize_box_id].right,
+                   self.boxes[self.resize_box_id].bottom)
+            self.boxes[self.resize_box_id].top = event.y
+            self.annotations[self.current_file].bbox[box_id][0] = event.y
+        elif self.box_resize_mode == 'BOTTOM':
+            self.canvas.coords(self.boxes[self.resize_box_id].rect, 
+                   self.boxes[self.resize_box_id].left, 
+                   self.boxes[self.resize_box_id].top,
+                   self.boxes[self.resize_box_id].right,
+                   event.y)
+            self.boxes[self.resize_box_id].bottom = event.y
+            self.annotations[self.current_file].bbox[box_id][2] = event.y
 
+        elif not hasattr(self, 'rect'):
+    
+            color = self.colorspace[self.selected_class.get()]
+            self.rect = self.canvas.create_rectangle(self.clicked[0], 
+                                                     self.clicked[1], 
+                                                     self.clicked[0], 
+                                                     self.clicked[1], 
+                                                     width=5,
+                                                     outline=color)
+        else:
+            self.box_end = (event.x, event.y)
+            self.canvas.coords(self.rect, 
+                               self.clicked[0], 
+                               self.clicked[1],
+                               event.x,
+                               event.y)
+        
     def _load_image_from_file(self):
         self.img = Image.open(self.file_list[self.current_file])
         

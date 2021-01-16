@@ -20,7 +20,7 @@ from interactivebox import InteractiveBox
 
 class AnnotationTool(object):
     
-    def __init__(self, file_ext = '.jpg'):
+    def __init__(self, file_ext = ['.jpg']):
         '''
 
         Parameters
@@ -81,7 +81,10 @@ class AnnotationTool(object):
 
     def _new(self):
         self.root = askdirectory()
-        self.file_list = glob.glob(self.root + '\*%s' % self.file_ext)
+        
+        self.file_list = []
+        for fe in self.file_ext:
+            self.file_list += glob.glob(self.root + '\*%s' % fe)
         self.project_open = True
  
         self.annotations = []

@@ -12,7 +12,6 @@ Near-Term Tasks required for beta release:
     - Drop down menu for classes contains color reference
     - Get metadata from PNG files
     - Install file
-    - Rename Object Class without deleting
     
 Long-Term functionality should include:
     - Network labeling capability

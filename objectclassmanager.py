@@ -32,7 +32,7 @@ class ObjectClassManager(object):
         
     def _add_object_class(self):
         self.class_manager_frame = Frame(self.class_manager_window,
-                                         height=200,
+                                         height=400,
                                          width=400)
         self.class_manager_frame.pack()
         
@@ -54,11 +54,16 @@ class ObjectClassManager(object):
             
 
             color_button.grid(row=i+1, column=1, pady=1)
+
+            rename_button = Button(self.class_manager_frame, 
+                                   text="Rename", 
+                                   command=lambda i=i: self._rename_class(i))
+            rename_button.grid(row=i+1, column=2, pady=1)
             
             remove_button = Button(self.class_manager_frame, 
-                                   text="X", 
+                                   text="Delete", 
                                    command=lambda i=i: self._remove_class(i))
-            remove_button.grid(row=i+1, column=2, pady=1)
+            remove_button.grid(row=i+1, column=3, pady=1)
         
         self.new_class_var = None
         
@@ -67,7 +72,7 @@ class ObjectClassManager(object):
         self.new_class_entry.grid(row=len(self.root_app.class_list)+1, 
                                   column=0)
         add_button = Button(self.class_manager_frame, 
-                               text="+", 
+                               text="Add Class", 
                                command=self._add_class)
         add_button.grid(row=len(self.root_app.class_list)+1, column=2)
                     
@@ -77,6 +82,60 @@ class ObjectClassManager(object):
         close_button.grid(row=len(self.root_app.class_list)+2, 
                           column=0, 
                           columnspan=3)
+
+    def _rename_class_action(self, button_id):
+        
+        old_class = self.root_app.class_list[button_id]
+        new_class = self.rename_entry.get()
+        
+        if new_class == '':
+            print('Field was empty.  Please provide a new class name.')
+        else:
+            self.root_app.class_list[button_id] = new_class
+            self.root_app.colorspace[new_class] = self.root_app.colorspace.pop(old_class)
+            
+            self.rename_class_prompt.destroy()
+            self.class_manager_frame.destroy()
+            self._add_object_class()
+            
+            for a, ann in enumerate(self.root_app.annotations):
+                for b, lbl in enumerate(ann.label):
+                    if lbl == old_class:
+                        self.root_app.annotations[a].bbox[b][-1] = new_class
+                        self.root_app.annotations[a].label[b] = new_class
+                        
+        
+    def _rename_class(self, button_id):
+        
+        self.rename_class_prompt = tk.Toplevel()
+        self.rename_class_prompt.wm_title("Rename Class")
+        self.rename_class_prompt.geometry("%dx%d" % (400,200))
+        current_class = self.root_app.class_list[button_id]
+
+        self.rename_class_frame = Frame(self.rename_class_prompt,
+                                         height=400,
+                                         width=400)
+        self.rename_class_frame.pack()
+        label = Label(self.rename_class_frame, 
+                      text='Rename \"%s\" Class to:' % current_class)
+        label.grid(row=0, column=0, columnspan=2)
+        
+        self.new_class_name_var = None
+        self.rename_entry = Entry(self.rename_class_frame, 
+                      textvariable=self.new_class_name_var)
+        self.rename_entry.grid(row=1, column=0, columnspan=2)
+        
+        i = button_id
+        rename_button = Button(self.rename_class_frame, 
+                            text="Ok", 
+                            command=lambda i=i: self._rename_class_action(i))
+        rename_button.grid(row=2, column=0)
+                    
+        close_button = Button(self.rename_class_frame, 
+                              text="Cancel",
+                              command=self.rename_class_prompt.destroy)
+        close_button.grid(row=2, column=1)        
+    
     
     def _add_class(self):
                 

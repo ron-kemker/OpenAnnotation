@@ -10,6 +10,9 @@ Near-Term Tasks required for beta release:
     - Move Menu to separate file
     - Compile into executable
     - Drop down menu for classes contains color reference
+    - Get metadata from PNG files
+    - Install file
+    - Rename Object Class without deleting
     
 Long-Term functionality should include:
     - Network labeling capability
@@ -17,3 +20,4 @@ Long-Term functionality should include:
     - Better memory management
     - Better Configuration Management
     - Prettier Toolbar
+    - Help Menu

@@ -25,8 +25,9 @@ class AnnotationTool(object):
 
         Parameters
         ----------
-        file_ext : STRING, optional
-            The file extension of the images being imported. The default is '.jpg'.
+        file_ext : LIST of STRINGs, optional
+            The file extension of the images being imported. The default is 
+            ['.jpg'].
 
         Returns
         -------

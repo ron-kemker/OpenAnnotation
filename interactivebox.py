@@ -107,7 +107,6 @@ class InteractiveBox(object):
         else:
             return False
       
-
     def delete_box(self, box_id):
         self.root_app.annotations[self.image_id].bbox.pop(box_id)
         self.root_app.annotations[self.image_id].label.pop(box_id)

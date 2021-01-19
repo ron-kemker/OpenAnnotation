@@ -249,8 +249,10 @@ class AnnotationTool(object):
         fileMenu.add_separator()
         
         if self.project_open:
-            fileMenu.add_command(label="Import File", command=None)
-            fileMenu.add_command(label="Import Directory", command=None) 
+            fileMenu.add_command(label="Import File", 
+                                 command=self._import_file)
+            fileMenu.add_command(label="Import Directory", 
+                                 command=self._import_files_in_directory) 
             fileMenu.add_command(label="Export Project to CSV", 
                                   command=self._csv_exporter)
             fileMenu.add_separator()
@@ -266,6 +268,37 @@ class AnnotationTool(object):
             
             toolMenu.add_command(label="Reset Image", 
                                  command=self._reset_image)
+
+    def _import_file(self):
+        
+        file = askopenfilename(filetypes=(("Image File","*.jpg"),),
+                                                initialdir = "/",
+                                                title = "Select file")
+        
+        if file not in self.file_list:
+            self.file_list.append(file)
+            self.annotations.append(Annotation(file))
+            meta = exif.Image(file)
+            if meta.has_exif:
+               if 'orientation' in dir(meta):
+                   if meta.orientation == 6:
+                       self.annotations[-1].rotation = Image.ROTATE_270
+                   elif meta.orientation == 3:
+                       self.annotations[-1].rotation = Image.ROTATE_180
+                   elif meta.orientation == 8:
+                       self.annotations[-1].rotation = Image.ROTATE_90
+    
+            
+            # Build Toolbar Frame
+            self._draw_workspace()
+            self.saved = False       
+            
+        else:
+            print('File already in the project.')
+    
+    def _import_files_in_directory(self):
+        pass
+
         
     def _draw_object_class_manager(self):
         

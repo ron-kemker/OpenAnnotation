@@ -5,12 +5,11 @@
 Near-Term Tasks required for beta release:
     - Store relative image position (vs absolute)
     - Include class object count in Object Class Manager
-    - Allow mixture of file extensions
-    - Import files and directories
+    - Import directories
     - Move Menu to separate file
     - Compile into executable
     - Drop down menu for classes contains color reference
-    - Get metadata from PNG files
+    - Better inital class color support (random?)
     - Install file
     
 Long-Term functionality should include:
@@ -20,3 +19,4 @@ Long-Term functionality should include:
     - Better Configuration Management
     - Prettier Toolbar
     - Help Menu
+    - Get metadata from PNG files

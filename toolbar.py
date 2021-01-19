@@ -147,6 +147,10 @@ class Toolbar(object):
         
         self.root_app.annotations.pop(self.root_app.current_file)
         self.root_app.file_list.pop(self.root_app.current_file)
+        
+        if self.root_app.current_file == len(self.root_app.file_list):
+            self.root_app.current_file = self.root_app.current_file - 1
+        
         self.root_app._load_image_from_file()  
         self.root_app._draw_workspace()
         

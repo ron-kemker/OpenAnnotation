@@ -73,9 +73,10 @@ class ObjectClassManager(object):
             remove_button.grid(row=i+1, column=3, pady=1)
             
             
-            instances = 
+            instances = self.root_app.class_count[c]
             instance_label = Label(self.class_manager_frame, 
-                                   text=' %d labeled instances.' % )
+                                   text=' %d labeled instances.' % instances)
+            instance_label.grid(row=i+1, column=4)
         
         self.new_class_var = None
         
@@ -93,7 +94,7 @@ class ObjectClassManager(object):
                               command=self._close_class_manager)
         close_button.grid(row=len(self.root_app.class_list)+2, 
                           column=0, 
-                          columnspan=3)
+                          columnspan=4)
 
     def _rename_class_action(self, button_id):
         
@@ -168,6 +169,7 @@ class ObjectClassManager(object):
                 
             self.root_app.colorspace[new_class] = col
             self.root_app.class_list.append(new_class)
+            self.root_app.class_count[new_class] = 0
         self.class_manager_frame.destroy()
         self._add_object_class()
             
@@ -180,6 +182,7 @@ class ObjectClassManager(object):
         
         class_label = self.root_app.class_list.pop(button_id)
         del self.root_app.colorspace[class_label]
+        del self.root_app.class_count[class_label]
 
         for annotation in self.root_app.annotations:
             indices = [i for i, x in enumerate(annotation.label) if x == class_label]

@@ -145,6 +145,9 @@ class Toolbar(object):
     
     def _delete_from_project(self):
         
+        for lbl in self.root_app.annotations[self.root_app.current_file].label:
+            self.root_app.class_count[lbl] = self.root_app.class_count[lbl] - 1
+        
         self.root_app.annotations.pop(self.root_app.current_file)
         self.root_app.file_list.pop(self.root_app.current_file)
         

@@ -47,6 +47,7 @@ class AnnotationTool(object):
                            'Yellow'] 
         self.top_colors_free = self.top_colors.copy()
         self.top_colors_used = []
+        self.class_count = {}
 
     def load_app(self):
         
@@ -195,7 +196,7 @@ class AnnotationTool(object):
                                                           bottom, 
                                                           right, 
                                                           label)
-            
+            self.class_count[label] = self.class_count[label] + 1
         self._draw_workspace()
         self.saved = False
         self.box_resize_mode = 'NEW'
@@ -268,6 +269,10 @@ class AnnotationTool(object):
         self.img = self.img.transpose(rot)
                 
     def _reset_image(self):
+        
+        for lbl in self.annotations[self.current_file].label:
+            self.class_count[lbl] = self.class_count[lbl] - 1
+        
         self.annotations[self.current_file].label = []
         self.annotations[self.current_file].bbox = []
         self._draw_workspace()

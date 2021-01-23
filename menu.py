@@ -132,6 +132,7 @@ class AppMenu(object):
         self.root_app.colorspace = mat['colorspace']
         self.root_app.top_colors_free = mat['top_colors_free']
         self.root_app.top_colors_used = mat['top_colors_used']
+        self.root_app.class_count = mat['class_count']
 
         # Build Toolbar Frame
         self.root_app._load_image_from_file()  
@@ -147,7 +148,7 @@ class AppMenu(object):
                      'colorspace': self.root_app.colorspace,
                      'top_colors_free': self.root_app.top_colors_free,
                      'top_colors_used': self.root_app.top_colors_used,
-                     
+                     'class_count' : self.root_app.class_count,                     
                      }
         
         file_name = asksaveasfilename(filetypes=(("PKL files","*.pkl"),),

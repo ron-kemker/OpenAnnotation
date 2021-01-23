@@ -127,10 +127,10 @@ class AnnotationTool(object):
         
         for i, label in enumerate(self.annotations[self.current_file].bbox):
             
-            left = label[1]
-            top = label[0]
-            right = label[3]
-            bottom = label[2]
+            left = label[1] / self.aspect_ratio
+            top = label[0] / self.aspect_ratio
+            right = label[3] / self.aspect_ratio
+            bottom = label[2] / self.aspect_ratio
             color = self.colorspace[label[-1]]
             
             box = InteractiveBox(left, top, right, bottom, color)
@@ -184,6 +184,11 @@ class AnnotationTool(object):
             self.canvas.delete(self.rect)
             del self.rect
             box.draw_box(self, len(self.annotations[self.current_file].bbox))
+            
+            top = self.aspect_ratio * top
+            bottom = self.aspect_ratio * bottom
+            left = self.aspect_ratio * left
+            right = self.aspect_ratio * right
             
             self.annotations[self.current_file].add_label(top, 
                                                           left, 

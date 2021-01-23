@@ -109,7 +109,6 @@ class AppMenu(object):
                        self.root_app.annotations[-1].rotation = Image.ROTATE_180
                    elif meta.orientation == 8:
                        self.root_app.annotations[-1].rotation = Image.ROTATE_90
-
         
         # Build Toolbar Frame
         self.root_app._load_image_from_file()  

@@ -44,7 +44,9 @@ class AnnotationTool(object):
 
         self.colorspace = {}
         self.top_colors = ['Blue', 'Red', 'Green', 'Cyan', 'Magenta', 
-                           'Yellow'] # TODO: Support Additional Colors
+                           'Yellow'] 
+        self.top_colors_free = self.top_colors.copy()
+        self.top_colors_used = []
 
     def load_app(self):
         
@@ -108,7 +110,9 @@ class AnnotationTool(object):
                             
         new_size = (int(self.img.size[0]/self.aspect_ratio), 
                     int(self.img.size[1]/self.aspect_ratio))
-                
+        
+        
+        
         self.canvas = Canvas(self.canvas_frame,
                                    width=self.image_frame_width, 
                                    height=self.window_height)

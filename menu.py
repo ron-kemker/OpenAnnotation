@@ -102,7 +102,7 @@ class AppMenu(object):
             self.root_app.annotations.append(Annotation(file))
             meta = exif.Image(file)
             if meta.has_exif:
-               if 'orientation' in dir(meta):
+                if 'orientation' in dir(meta):
                    if meta.orientation == 6:
                        self.root_app.annotations[-1].rotation = Image.ROTATE_270
                    elif meta.orientation == 3:
@@ -131,6 +131,8 @@ class AppMenu(object):
         self.root_app.current_file = mat['current_file']
         self.root_app.file_ext = mat['file_ext']
         self.root_app.colorspace = mat['colorspace']
+        self.root_app.top_colors_free = mat['top_colors_free']
+        self.root_app.top_colors_used = mat['top_colors_used']
 
         # Build Toolbar Frame
         self.root_app._load_image_from_file()  
@@ -144,6 +146,9 @@ class AppMenu(object):
                      'current_file':self.root_app.current_file,
                      'file_ext': self.root_app.file_ext,
                      'colorspace': self.root_app.colorspace,
+                     'top_colors_free': self.root_app.top_colors_free,
+                     'top_colors_used': self.root_app.top_colors_used,
+                     
                      }
         
         file_name = asksaveasfilename(filetypes=(("PKL files","*.pkl"),),

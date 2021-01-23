@@ -8,8 +8,8 @@ Near-Term Tasks required for beta release:
     - Import directories
     - Compile into executable
     - Drop down menu for classes contains color reference
-    - Better inital class color support (random?)
     - Install file
+    - Prompt if you really want to delete the class
     
 Long-Term functionality should include:
     - Network labeling capability

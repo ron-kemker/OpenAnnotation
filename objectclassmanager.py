@@ -5,7 +5,7 @@ Created on Sun Jan 10 07:57:48 2021
 @author: Ronald Kemker
 """
 
-
+import random
 import tkinter as tk
 from tkinter import Frame, Label, Menu, Button, Entry, \
     OptionMenu, StringVar, colorchooser
@@ -19,11 +19,18 @@ class ObjectClassManager(object):
         self.class_manager_window.wm_title("Object Class Manager")
         self.class_manager_window.geometry("%dx%d" % (400,400))
 
+
+
         self._add_object_class()
 
     def _choose_color(self, button_id):
+        
         color_code = colorchooser.askcolor(title="Choose Color")
         class_id = self.root_app.class_list[button_id]
+        
+        if self.root_app.colorspace[class_id] in self.root_app.top_colors:
+            self.root_app.top_colors_free.insert(0, self.root_app.colorspace[class_id])
+            self.root_app.top_colors_used.remove(self.root_app.colorspace[class_id])
         self.root_app.colorspace[class_id] = color_code[1]
         self.class_manager_frame.destroy()
         self._add_object_class()   
@@ -146,20 +153,29 @@ class ObjectClassManager(object):
         elif new_class in self.root_app.class_list:
             print("Class already exists.")
         else:
-            self.root_app.colorspace[new_class] = self.root_app.top_colors.pop(0)
+            
+            if len(self.root_app.top_colors_free) > 0:
+                col = self.root_app.top_colors_free.pop(0)
+                self.root_app.top_colors_used.append(col)
+
+            else:
+                col = "#%06x" % random.randint(0, 0xFFFFFF)
+                
+            self.root_app.colorspace[new_class] = col
             self.root_app.class_list.append(new_class)
         self.class_manager_frame.destroy()
         self._add_object_class()
             
     def _remove_class(self, button_id):
         color = self.root_app.colorspace[self.root_app.class_list[button_id]]
-        # del self.root_app.colorspace[self.root_app.class_list[button_id]]
-        self.root_app.top_colors.insert(0, color)
+        
+        if color in self.root_app.top_colors:
+            self.root_app.top_colors_free.insert(0, color)
+            self.root_app.top_colors_used.remove(color)            
+        
         class_label = self.root_app.class_list.pop(button_id)
         del self.root_app.colorspace[class_label]
 
-        
-        #TODO: Prompt if you really want to delete the class        
         for annotation in self.root_app.annotations:
             indices = [i for i, x in enumerate(annotation.label) if x == class_label]
             for ind in sorted(indices, reverse = True):  

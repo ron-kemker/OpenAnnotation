@@ -3,8 +3,6 @@
 
 
 Near-Term Tasks required for beta release:
-    - Include class object count in Object Class Manager
-    - Import directories
     - Compile into executable
     - Drop down menu for classes contains color reference
     - Install file
@@ -21,4 +19,4 @@ Long-Term functionality should include:
     - Get metadata from PNG files
     - Better Project Overview/Preview
     - Project creation Wizard (New Blank Project vs Project Wizard)
-    - Create an option window that allows the window to be resized.
+    - Create an option popup window that allows the window to be resized.

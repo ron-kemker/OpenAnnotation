@@ -86,8 +86,28 @@ class AppMenu(object):
             print('File already in the project.')
     
     def _import_files_in_directory(self):
-        pass
-    
+        new_dir = askdirectory()
+        tmp_file_list = []
+        for fe in self.root_app.file_ext:
+            tmp_file_list += glob.glob(new_dir + '\*%s' % fe)
+
+
+        for file in tmp_file_list:
+            self.root_app.annotations.append(Annotation(file))
+            meta = exif.Image(file)
+            if meta.has_exif:
+                if 'orientation' in dir(meta):
+                   if meta.orientation == 6:
+                       self.root_app.annotations[-1].rotation = Image.ROTATE_270
+                   elif meta.orientation == 3:
+                       self.root_app.annotations[-1].rotation = Image.ROTATE_180
+                   elif meta.orientation == 8:
+                       self.root_app.annotations[-1].rotation = Image.ROTATE_90        
+
+        self.root_app.file_list += tmp_file_list
+        self.root_app._load_image_from_file()  
+        self.root_app._draw_workspace()
+        self.root_app.saved = False    
     
     def _new(self):
         self.root = askdirectory()

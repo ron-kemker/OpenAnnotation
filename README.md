@@ -6,7 +6,6 @@ Near-Term Tasks required for beta release:
     - Store relative image position (vs absolute)
     - Include class object count in Object Class Manager
     - Import directories
-    - Move Menu to separate file
     - Compile into executable
     - Drop down menu for classes contains color reference
     - Better inital class color support (random?)
@@ -20,3 +19,5 @@ Long-Term functionality should include:
     - Prettier Toolbar
     - Help Menu
     - Get metadata from PNG files
+    - Better Project Overview/Preview
+    - Project creation Wizard (New Blank Project vs Project Wizard)

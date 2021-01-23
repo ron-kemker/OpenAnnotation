@@ -6,14 +6,10 @@ Created on Thu Dec 31 09:26:18 2020
 """
 
 import tkinter as tk
-from tkinter import Frame, Label, Menu, Button, Canvas
-from tkinter.filedialog import askopenfilename, asksaveasfilename, \
-    askdirectory
+from tkinter import Frame, Button, Canvas
 from PIL import ImageTk, Image
-import glob
-import exif 
-import pickle
 
+from menu import AppMenu
 from objectclassmanager import ObjectClassManager
 from toolbar import Toolbar
 from interactivebox import InteractiveBox
@@ -44,6 +40,7 @@ class AnnotationTool(object):
         self.current_file = 0
         self.project_open = False
         self.saved = True
+        self.app_menu = AppMenu(self)
 
         self.colorspace = {}
         self.top_colors = ['Blue', 'Red', 'Green', 'Cyan', 'Magenta', 
@@ -55,7 +52,7 @@ class AnnotationTool(object):
         self.window = tk.Tk()
         self.window.title("Image Annotation Tool")  # to define the title
         self.window.geometry("%dx%d" % (self.window_width,self.window_height))
-        self._draw_menu()
+        self.app_menu._draw_menu()
                    
         self.background = Frame(self.window,
                                 width=self.window_width,
@@ -65,240 +62,20 @@ class AnnotationTool(object):
         # Create Load Screen Buttons
         new_button = Button(self.background, text="New Project", width = 20,
                             height=3, 
-                            command=self._new)
+                            command=self.app_menu._new)
         new_button.grid(row=0, column=0, sticky='n', pady=2 )
 
         load_button = Button(self.background, text="Load Project", width=20,
                             height=3, 
-                            command=self._open)
+                            command=self.app_menu._open)
         load_button.grid(row=1, column=0, sticky='n', pady=2  )
 
         quit_button = Button(self.background, text="Quit", width=20, 
                              height=3, 
-                            command=self._quit)
+                            command=self.app_menu._quit)
         quit_button.grid(row=2, column=0, sticky='n', pady=2  )
         
         self.window.mainloop()
-
-    def _new(self):
-        self.root = askdirectory()
-        
-        self.file_list = []
-        for fe in self.file_ext:
-            self.file_list += glob.glob(self.root + '\*%s' % fe)
-        self.project_open = True
- 
-        self.annotations = []
-        for ii, file in enumerate(self.file_list):
-            self.annotations.append(Annotation(file))
-            meta = exif.Image(file)
-            if meta.has_exif:
-               if 'orientation' in dir(meta):
-                   if meta.orientation == 6:
-                       self.annotations[-1].rotation = Image.ROTATE_270
-                   elif meta.orientation == 3:
-                       self.annotations[-1].rotation = Image.ROTATE_180
-                   elif meta.orientation == 8:
-                       self.annotations[-1].rotation = Image.ROTATE_90
-
-        
-        # Build Toolbar Frame
-        self._load_image_from_file()  
-        self._draw_workspace()
-        self.saved = False
-
-    def _open(self):
-        self.saved = True
-        self.project_open = True
-
-        file_name = askopenfilename(filetypes=(("PKL files","*.pkl"),),
-                                                initialdir = "/",
-                                                title = "Select file")
-        with open(file_name, 'rb') as f:
-            mat = pickle.load(f)
-        self.annotations = mat['annotations']
-        self.file_list = mat['file_list']
-        self.class_list = mat['class_list']
-        self.current_file = mat['current_file']
-        self.file_ext = mat['file_ext']
-        self.colorspace = mat['colorspace']
-
-        # Build Toolbar Frame
-        self._load_image_from_file()  
-        self._draw_workspace()
-        
-    def _save(self):
-        
-        save_dict = {'annotations': self.annotations,
-                     'file_list': self.file_list,
-                     'class_list': self.class_list,
-                     'current_file':self.current_file,
-                     'file_ext': self.file_ext,
-                     'colorspace': self.colorspace,
-                     }
-        
-        file_name = asksaveasfilename(filetypes=(("PKL files","*.pkl"),),
-                                                initialdir = "/",
-                                                title = "Select file")
-        if file_name != '':        
-            f = open(file_name, "wb")
-            pickle.dump(save_dict, f)
-            f.close()
-            self.saved = True
-
-    def _close(self):
-        self.project_open = False
-        
-        if not self.saved:
-            self.popup_window = tk.Toplevel()
-            self.popup_window.geometry("300x100") 
-            self.popup_window.wm_title("Save Work?")
-            
-            bkgd_frame = Frame(self.popup_window, width=300, height=100)
-            bkgd_frame.pack()
-            
-            prompt_txt = "Close without saving?"
-            prompt = Label(bkgd_frame, text=prompt_txt)
-            prompt.grid(row=0, column=0, columnspan=3, sticky='nsew')
-            
-            yes_button = Button(bkgd_frame, text="Save", 
-                                command=self._save_close_command)
-            yes_button.grid(row=1, column=0)
-            no_button = Button(bkgd_frame, text="Close", 
-                               command=self._close_command)
-            no_button.grid(row=1, column=1)           
-            cancel_button = Button(bkgd_frame, text="Cancel", 
-                                   command=self.popup_window.destroy)
-            cancel_button.grid(row=1, column=2)            
-        else:
-            self._close_command()
-
-    def _save_close_command(self):
-        self._save()
-        self._close_command()
-        
-    def _close_command(self):        
-        
-        if hasattr(self, 'popup_window'):
-            self.popup_window.destroy()
-        self.background.destroy()
-        self.__init__()
-        self._draw_menu()
-                   
-        self.background = Frame(self.window,
-                                width=self.window_width,
-                                height=self.window_height)
-        self.background.pack()
-                
-        # Create Load Screen Buttons
-        new_button = Button(self.background, text="New Project", width = 20,
-                            height=3, 
-                            command=self._new)
-        new_button.grid(row=0, column=0, sticky='n', pady=2 )
-
-        load_button = Button(self.background, text="Load Project", width=20,
-                            height=3, 
-                            command=self._open)
-        load_button.grid(row=1, column=0, sticky='n', pady=2  )
-
-        quit_button = Button(self.background, text="Quit", width=20, 
-                             height=3, 
-                            command=self._quit)
-        quit_button.grid(row=2, column=0, sticky='n', pady=2  )
-
-    def _quit(self):
-        
-        if not self.saved:
-            popup_window = tk.Toplevel()
-            popup_window.geometry("300x100") 
-            popup_window.wm_title("Save Work?")
-            
-            bkgd_frame = Frame(popup_window, width=300, height=100)
-            bkgd_frame.pack()
-            
-            prompt_txt = "Quit without saving?"
-            prompt = Label(bkgd_frame, text=prompt_txt)
-            prompt.grid(row=0, column=0, columnspan=3, sticky='nsew')
-            
-            yes_button = Button(bkgd_frame, text="Save", command=self._save)
-            yes_button.grid(row=1, column=0)
-            no_button = Button(bkgd_frame, text="Quit", 
-                               command=self.window.destroy)
-            no_button.grid(row=1, column=1)           
-            cancel_button = Button(bkgd_frame, text="Cancel", 
-                                   command=popup_window.destroy)
-            cancel_button.grid(row=1, column=2)            
-        else:
-            self.window.destroy()
-        
-    def _draw_menu(self):
-        # Build File Menu
-        menu = Menu(self.window)
-        self.window.config(menu=menu)
-        fileMenu = Menu(menu)
-        menu.add_cascade(label="File", menu=fileMenu)
-        fileMenu.add_command(label="New Project", 
-                             command=self._new)
-        fileMenu.add_command(label="Open Project", command=self._open)
-        
-        
-        if self.project_open:
-            fileMenu.add_command(label="Save Project", command=self._save)
-            fileMenu.add_command(label="Close Project", command=self._close)
-        
-        fileMenu.add_separator()
-        
-        if self.project_open:
-            fileMenu.add_command(label="Import File", 
-                                 command=self._import_file)
-            fileMenu.add_command(label="Import Directory", 
-                                 command=self._import_files_in_directory) 
-            fileMenu.add_command(label="Export Project to CSV", 
-                                  command=self._csv_exporter)
-            fileMenu.add_separator()
-        
-        fileMenu.add_command(label="Quit", command=self._quit)
-        
-        if self.project_open:
-
-            toolMenu = Menu(menu)
-            menu.add_cascade(label="Tools", menu=toolMenu)
-            toolMenu.add_command(label="Class Manager", 
-                                 command=self._draw_object_class_manager)
-            
-            toolMenu.add_command(label="Reset Image", 
-                                 command=self._reset_image)
-
-    def _import_file(self):
-        
-        file = askopenfilename(filetypes=(("Image File","*.jpg"),),
-                                                initialdir = "/",
-                                                title = "Select file")
-        
-        if file not in self.file_list:
-            self.file_list.append(file)
-            self.annotations.append(Annotation(file))
-            meta = exif.Image(file)
-            if meta.has_exif:
-               if 'orientation' in dir(meta):
-                   if meta.orientation == 6:
-                       self.annotations[-1].rotation = Image.ROTATE_270
-                   elif meta.orientation == 3:
-                       self.annotations[-1].rotation = Image.ROTATE_180
-                   elif meta.orientation == 8:
-                       self.annotations[-1].rotation = Image.ROTATE_90
-    
-            
-            # Build Toolbar Frame
-            self._draw_workspace()
-            self.saved = False       
-            
-        else:
-            print('File already in the project.')
-    
-    def _import_files_in_directory(self):
-        pass
-
         
     def _draw_object_class_manager(self):
         
@@ -306,7 +83,7 @@ class AnnotationTool(object):
         
     def _draw_workspace(self):
         
-        self._draw_menu()
+        self.app_menu._draw_menu()
         
         self.background.destroy()
         
@@ -362,9 +139,6 @@ class AnnotationTool(object):
             self.canvas.bind("<ButtonRelease-1>",self._on_release)
             self.canvas.bind("<B1-Motion>", self._on_move_press)
 
-    def _csv_exporter(self):
-        return
-        
 
     def _on_click(self, event):
         
@@ -489,18 +263,6 @@ class AnnotationTool(object):
         self.annotations[self.current_file].bbox = []
         self._draw_workspace()
         
-class Annotation(object):
-    
-    def __init__(self, filename):
-        self.filename = filename
-        self.bbox = []
-        self.label = []
-        self.rotation = 0
-        self.ignore = False
-    
-    def add_label(self, top, left, bottom, right, label):
-        self.bbox.append([top, left, bottom, right, label])
-        self.label.append(label)
 
     
 if __name__ == "__main__":

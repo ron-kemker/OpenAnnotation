@@ -71,6 +71,11 @@ class ObjectClassManager(object):
                                    text="Delete", 
                                    command=lambda i=i: self._remove_class(i))
             remove_button.grid(row=i+1, column=3, pady=1)
+            
+            
+            instances = 
+            instance_label = Label(self.class_manager_frame, 
+                                   text=' %d labeled instances.' % )
         
         self.new_class_var = None
         
@@ -185,7 +190,6 @@ class ObjectClassManager(object):
         self.class_manager_frame.destroy()
         self._add_object_class()                 
 
-        
     def _close_class_manager(self):
         self.class_manager_window.destroy()
         self.root_app._draw_workspace()

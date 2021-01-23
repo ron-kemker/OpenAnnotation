@@ -189,15 +189,3 @@ class ObjectClassManager(object):
     def _close_class_manager(self):
         self.class_manager_window.destroy()
         self.root_app._draw_workspace()
-        
-if __name__ == "__main__":
-
-    import types    
-
-    root_app = types.SimpleNamespace()
-    root_app.class_list = ['Winston', 'Prince']
-    root_app.top_colors = ['Green', 'Cyan', 'Magenta', 'Yellow']
-    root_app.colorspace = {'Winston': 'Blue', 'Prince': 'Red'}
-    root_app._draw_workspace = lambda: print('Redraw Workspace')
-    obj_mgr = ObjectClassManager(root_app)
-    obj_mgr.class_manager_window.mainloop()

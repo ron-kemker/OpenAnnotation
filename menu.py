@@ -106,6 +106,9 @@ class AppMenu(object):
             
             # Build Toolbar Frame
         
+            # If this is the first image being loaded, then add it to canvas
+            if not hasattr(self, 'img'):
+                self.root_app._load_image_from_file()  
             self.root_app._draw_workspace()
             self.root_app.saved = False       
             
@@ -127,7 +130,9 @@ class AppMenu(object):
             self.file_to_annotation(file)
 
         self.root_app.file_list += tmp_file_list
-        self.root_app._load_image_from_file()  
+        # If this is the first image being loaded, then add it to canvas
+        if not hasattr(self, 'img'):
+            self.root_app._load_image_from_file()  
         self.root_app._draw_workspace()
         self.root_app.saved = False    
     

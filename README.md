@@ -21,7 +21,7 @@ Required to Build Stand-Alone GUI Application:
 - Projects support multi-class bounding box annotation
 - Export projects to CSV (for future use)
 
-## Planned O.2 Release
+## Planned 0.2 Release
 - Help Menu
 - Create an option popup window that allows the window to be resized.
 - Project creation Wizard (New Blank Project vs Project Wizard)

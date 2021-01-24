@@ -7,6 +7,8 @@ Created on Mon Jan 18 21:25:58 2021
 
 import glob, exif, pickle, csv
 from PIL import Image
+from plum._exceptions import UnpackError
+
 
 import tkinter as tk
 from tkinter import Frame, Label, Menu, Button
@@ -71,30 +73,39 @@ class AppMenu(object):
                 toolMenu.add_command(label="Reset Image", 
                                      command=self.root_app._reset_image)
 
+    def file_to_annotation(self, file):
+        self.root_app.annotations.append(Annotation(file))
+        try:   
+            meta = exif.Image(file)
+            if meta.has_exif:
+                if 'orientation' in dir(meta):
+                   if meta.orientation == 6:
+                       self.root_app.annotations[-1].rotation = Image.ROTATE_270
+                   elif meta.orientation == 3:
+                       self.root_app.annotations[-1].rotation = Image.ROTATE_180
+                   elif meta.orientation == 8:
+                       self.root_app.annotations[-1].rotation = Image.ROTATE_90   
+        except UnpackError:
+            print('%s does not have exif formatted metadata.' % file)
+
     def _import_file(self):
         
-        file = askopenfilename(filetypes=(("Image File","*.jpg"),),
+        file = askopenfilename(filetypes=(("Image File",
+                                           self.root_app.file_ext),
+                                          ),
                                                 initialdir = "/",
                                                 title = "Select file")
 
         if not file:
             return
         
-        if file not in self.root_app.file_list:
+        elif file not in self.root_app.file_list:
             self.root_app.file_list.append(file)
-            self.root_app.annotations.append(Annotation(file))
-            meta = exif.Image(file)
-            if meta.has_exif:
-               if 'orientation' in dir(meta):
-                   if meta.orientation == 6:
-                       self.root_app.annotations[-1].rotation = Image.ROTATE_270
-                   elif meta.orientation == 3:
-                       self.root_app.annotations[-1].rotation = Image.ROTATE_180
-                   elif meta.orientation == 8:
-                       self.root_app.annotations[-1].rotation = Image.ROTATE_90
+            self.file_to_annotation(file)
     
             
             # Build Toolbar Frame
+        
             self.root_app._draw_workspace()
             self.root_app.saved = False       
             
@@ -113,16 +124,7 @@ class AppMenu(object):
 
 
         for file in tmp_file_list:
-            self.root_app.annotations.append(Annotation(file))
-            meta = exif.Image(file)
-            if meta.has_exif:
-                if 'orientation' in dir(meta):
-                   if meta.orientation == 6:
-                       self.root_app.annotations[-1].rotation = Image.ROTATE_270
-                   elif meta.orientation == 3:
-                       self.root_app.annotations[-1].rotation = Image.ROTATE_180
-                   elif meta.orientation == 8:
-                       self.root_app.annotations[-1].rotation = Image.ROTATE_90        
+            self.file_to_annotation(file)
 
         self.root_app.file_list += tmp_file_list
         self.root_app._load_image_from_file()  
@@ -133,25 +135,9 @@ class AppMenu(object):
         # self.root = askdirectory()
         
         self.root_app.file_list = []
-        # for fe in self.root_app.file_ext:
-        #     self.root_app.file_list += glob.glob(self.root + '\*%s' % fe)
         self.root_app.project_open = True
  
-        self.root_app.annotations = []
-        # for ii, file in enumerate(self.root_app.file_list):
-        #     self.root_app.annotations.append(Annotation(file))
-        #     meta = exif.Image(file)
-        #     if meta.has_exif:
-        #         if 'orientation' in dir(meta):
-        #            if meta.orientation == 6:
-        #                self.root_app.annotations[-1].rotation = Image.ROTATE_270
-        #            elif meta.orientation == 3:
-        #                self.root_app.annotations[-1].rotation = Image.ROTATE_180
-        #            elif meta.orientation == 8:
-        #                self.root_app.annotations[-1].rotation = Image.ROTATE_90
-        
-        # Build Toolbar Frame
-        # self.root_app._load_image_from_file()  
+        self.root_app.annotations = [] 
         self.root_app._draw_workspace()
         self.root_app.saved = False
 
@@ -292,7 +278,7 @@ class AppMenu(object):
         '''
         Creates a CSV of the entire project.  Format is:
         
-            filename, label, top, left, bottom, right, rotation
+            filename, label, x0, y0, x1, y1, rotation
 
         Returns
         -------
@@ -330,7 +316,7 @@ class Annotation(object):
         self.filename = filename
         self.bbox = []
         self.label = []
-        self.rotation = 0
+        self.rotation = -1
         self.ignore = False
     
     def add_label(self, top, left, bottom, right, label):

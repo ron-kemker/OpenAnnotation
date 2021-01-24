@@ -69,7 +69,7 @@ class ObjectClassManager(object):
             
             remove_button = Button(self.class_manager_frame, 
                                    text="Delete", 
-                                   command=lambda i=i: self._remove_class(i))
+                                   command=lambda i=i: self._check_before_remove(i))
             remove_button.grid(row=i+1, column=3, pady=1)
             
             
@@ -172,7 +172,30 @@ class ObjectClassManager(object):
             self.root_app.class_count[new_class] = 0
         self.class_manager_frame.destroy()
         self._add_object_class()
-            
+    
+    def _check_before_remove(self, button_id):
+        self.popup_window = tk.Toplevel()
+        self.popup_window.geometry("300x100") 
+        self.popup_window.wm_title("Remove Class?")
+        
+        bkgd_frame = Frame(self.popup_window)
+        bkgd_frame.place(x=0, y=0, width=300, height=100)
+        
+        prompt_txt = "Delete Class?  You cannot undo this action."
+        prompt = Label(bkgd_frame, text=prompt_txt)
+        prompt.place(x=10, y=0, width=280, height=30)
+        
+        i=button_id
+        yes_button = Button(bkgd_frame, 
+                            text="Remove", 
+                            command=lambda i=i: self._remove_class(i))
+        yes_button.place(x=90, y=30, height=30, width=50)
+        
+        cancel_button = Button(bkgd_frame, text="Cancel", 
+                               command=self.popup_window.destroy)
+        cancel_button.place(x=160, y=30, height=30, width=50)
+
+        
     def _remove_class(self, button_id):
         color = self.root_app.colorspace[self.root_app.class_list[button_id]]
         
@@ -191,7 +214,10 @@ class ObjectClassManager(object):
                 del annotation.bbox[ind]
 
         self.class_manager_frame.destroy()
-        self._add_object_class()                 
+        self._add_object_class() 
+
+        if hasattr(self, 'popup_window'):
+            self.popup_window.destroy()                
 
     def _close_class_manager(self):
         self.class_manager_window.destroy()

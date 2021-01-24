@@ -67,7 +67,6 @@ class AppMenu(object):
 
         if not file:
             return
-
         
         if file not in self.root_app.file_list:
             self.root_app.file_list.append(file)

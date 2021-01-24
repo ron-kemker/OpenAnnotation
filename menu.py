@@ -5,9 +5,7 @@ Created on Mon Jan 18 21:25:58 2021
 @author: Master
 """
 
-import glob
-import exif 
-import pickle
+import glob, exif, pickle, csv
 from PIL import Image
 
 import tkinter as tk
@@ -277,7 +275,39 @@ class AppMenu(object):
 
 
     def _csv_exporter(self):
-        return
+        '''
+        Creates a CSV of the entire project.  Format is:
+        
+            filename, label, top, left, bottom, right, rotation
+
+        Returns
+        -------
+        None.
+
+        '''
+
+        file_name = asksaveasfilename(filetypes=(("CSV files","*.csv"),),
+                                                initialdir = "/",
+                                                title = "Select file")
+        if file_name == '':  
+            return
+        else:
+            file_name = file_name + '.csv'
+        
+        with open(file_name, mode='w', newline='') as file:
+            writer = csv.writer(file, delimiter=',')            
+            header = ['filename','label','left','top','right','bottom',
+                      'rotation']
+            writer.writerow(header)
+        
+        
+            for i, image in enumerate(self.root_app.annotations):
+                for b, box in enumerate(image.bbox):
+                    
+                    row = [image.filename,image.label[b], box[1], box[0],
+                           box[3],box[2],image.rotation]
+                    writer.writerow(row)
+        
         
             
 class Annotation(object):

@@ -10,7 +10,6 @@ import tkinter as tk
 from tkinter import Frame, Label, Button, StringVar, OptionMenu
 from PIL import ImageTk, Image, ImageOps
 
-
 class Toolbar(object):
     
     def __init__(self, root_app):

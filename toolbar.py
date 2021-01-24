@@ -13,6 +13,20 @@ from PIL import ImageTk, Image, ImageOps
 class Toolbar(object):
     
     def __init__(self, root_app):
+        '''
+        This is the toolbar on the far left side.
+        
+        Parameters
+        ----------
+        root_app : Pass a pointer to the root_application to access "global"
+                   variables.
+        
+        Returns
+        -------
+        None.
+    
+        '''            
+
         self.root_app = root_app
         self.toolbar_width = self.root_app.toolbar_width
         self.toolbar_height = self.root_app.window_height

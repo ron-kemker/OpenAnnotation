@@ -13,7 +13,20 @@ from tkinter import Frame, Label, Menu, Button, Entry, \
 class ObjectClassManager(object):
     
     def __init__(self, root_app):
+        '''
+        This brings up a popup window that helps add/remove/rename object 
+        classes.
         
+        Parameters
+        ----------
+        root_app : Pass a pointer to the root_application to access "global"
+                   variables.
+        
+        Returns
+        -------
+        None.
+    
+        '''           
         self.root_app = root_app
         self.class_manager_window = tk.Toplevel()
         self.class_manager_window.wm_title("Object Class Manager")

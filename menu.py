@@ -14,8 +14,22 @@ from tkinter.filedialog import askopenfilename, asksaveasfilename, \
     askdirectory
 
 class AppMenu(object):
-    
+   
     def __init__(self, root_app):
+        '''
+        This is the menu bar at the top of the application.
+        
+        Parameters
+        ----------
+        root_app : Pass a pointer to the root_application to access "global"
+                   variables.
+        
+        Returns
+        -------
+        None.
+    
+        '''           
+        
         self.root_app = root_app
 
     def _draw_menu(self):

@@ -9,8 +9,20 @@ import tkinter as tk
 from PIL import ImageTk, Image
 
 class InteractiveBox(object):
-    
+
     def __init__(self, left, top, right, bottom, color, line_width=5):
+        '''
+        This is the canvas tool where the image and annotations are drawn on.
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        None.
+    
+        '''    
         
         self.left = left
         self.right = right

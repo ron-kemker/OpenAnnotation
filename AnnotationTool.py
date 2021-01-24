@@ -16,15 +16,15 @@ from interactivebox import InteractiveBox
 
 class AnnotationTool(object):
     
-    def __init__(self, file_ext = ['.jpg']):
+    def __init__(self):
         '''
-
+        This is the main annotation tool object.  Running this .py file will
+        open the application.
+        
         Parameters
         ----------
-        file_ext : LIST of STRINGs, optional
-            The file extension of the images being imported. The default is 
-            ['.jpg'].
-
+        None
+        
         Returns
         -------
         None.
@@ -32,7 +32,7 @@ class AnnotationTool(object):
         '''
         
         self.class_list = []
-        self.file_ext = file_ext
+        self.file_ext = ['.jpg']
         self.window_width = 1024
         self.window_height = 768
         self.toolbar_width = 150
@@ -157,13 +157,13 @@ class AnnotationTool(object):
             
             self.boxes = []
             
-            for i, label in enumerate(self.annotations[self.current_file].bbox):
+            for i, lbl in enumerate(self.annotations[self.current_file].bbox):
                 
-                left = label[1] / self.aspect_ratio
-                top = label[0] / self.aspect_ratio
-                right = label[3] / self.aspect_ratio
-                bottom = label[2] / self.aspect_ratio
-                color = self.colorspace[label[-1]]
+                left = lbl[1] / self.aspect_ratio
+                top = lbl[0] / self.aspect_ratio
+                right = lbl[3] / self.aspect_ratio
+                bottom = lbl[2] / self.aspect_ratio
+                color = self.colorspace[lbl[-1]]
                 
                 box = InteractiveBox(left, top, right, bottom, color)
                 box.draw_box(self, i)

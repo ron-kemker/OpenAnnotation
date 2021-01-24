@@ -21,19 +21,5 @@ Required to Build Stand-Alone GUI Application:
 - Projects support multi-class bounding box annotation
 - Export projects to CSV (for future use)
 
-## Planned 0.2 Release
-- Help Menu
-- Create an option popup window that allows the window to be resized.
-- Project creation Wizard (New Blank Project vs Project Wizard)
-- Get metadata from PNG files
-- Python 2.X support
-
-## Planned 0.3 Release
-- Improve Configuration Management and Unit Testing
-- Improve Documentation
-- Improve Memory Management
-- Improve Project Navigation
-
-## Long-Term functionality could include:
-- Network labeling capability (i.e., teams of annotators in the same project)
-- ROI Tool (beyond bounding boxes)
+## Future Work
+Follow the [project milestones](https://github.com/ron-kemker/OpenAnnotation/milestones) page to keep track of my plans going forward.

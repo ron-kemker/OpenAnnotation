@@ -32,7 +32,7 @@ class AnnotationTool(object):
         '''
         
         self.class_list = []
-        self.file_ext = ['.jpg']
+        self.file_ext = ['.jpg', '.png']
         self.window_width = 1024
         self.window_height = 768
         self.toolbar_width = 150
@@ -75,13 +75,13 @@ class AnnotationTool(object):
                             width=20,
                             height=3, 
                             command=self.app_menu._open)
-        load_button.grid(row=1, column=0, sticky='n', pady=2  )
+        load_button.grid(row=1, column=0, sticky='n', pady=2)
 
         quit_button = Button(self.background, text="Quit", 
                             width=20, 
                             height=3, 
                             command=self.app_menu._quit)
-        quit_button.grid(row=2, column=0, sticky='n', pady=2  )
+        quit_button.grid(row=2, column=0, sticky='n', pady=2)
         
         self.window.mainloop()
         
@@ -301,7 +301,8 @@ class AnnotationTool(object):
         self.file_list[self.current_file]
         
         rot = self.annotations[self.current_file].rotation
-        self.img = self.img.transpose(rot)
+        if rot > 0:
+            self.img = self.img.transpose(rot)
                 
     def _reset_image(self):
         
@@ -316,3 +317,4 @@ if __name__ == "__main__":
     
     tool = AnnotationTool()
     tool.load_app()
+    

@@ -1,7 +1,7 @@
 # OpenAnnotation
 Open-Source Annotation Tool for Computer Vision Projects
  
-By [Ronald Kemker](www.linkedin.com/in/ronald-kemker-66250b115)
+By [Ronald Kemker](https://www.linkedin.com/in/ronald-kemker-66250b115)
 
 ## Library Dependencies
 - TKinter

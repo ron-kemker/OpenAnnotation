@@ -7,7 +7,6 @@ Near-Term Tasks required for beta release:
     - Drop down menu for classes contains color reference
     - Install file
     - Prompt if you really want to delete the class
-    - New Project Screen (Don't Default to Folder Selection)
     
 Long-Term functionality should include:
     - Network labeling capability

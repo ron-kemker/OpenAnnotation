@@ -18,20 +18,25 @@ class Toolbar(object):
         self.toolbar_width = self.root_app.toolbar_width
         self.toolbar_height = self.root_app.window_height
         
+        self.toolbar_cumulative_height = 0
+        
         # Tool Bar Frame
         self.toolbar_frame = Frame(self.root_app.background, 
-                                   bg='blue',
+                                   bg='black',
                                    width=self.toolbar_width,
                                    height=self.toolbar_height)
-        self.toolbar_frame.grid(column=0, row=0, sticky='NW')
+        self.toolbar_frame.place(x=0,
+                                 y=0, 
+                                 height = self.toolbar_height,
+                                 width = self.toolbar_width)
         
         # Draw Tools
-        self._draw_image_navigator()
-        # self._draw_rotation_menu()
-        self._delete_from_project_button()
-        
-        if len(self.root_app.class_list) > 0:
-            self._draw_class_selection_menu()
+        if len(self.root_app.annotations):
+            self._draw_image_navigator()
+            self._delete_from_project_button()
+            
+            if len(self.root_app.class_list) > 0:
+                self._draw_class_selection_menu()
             
             
     def _draw_rotation_menu(self):
@@ -88,39 +93,58 @@ class Toolbar(object):
        
     def _draw_image_navigator(self):
         
-        nav_frame = Frame(self.toolbar_frame, bg=None, 
-                                     width=self.toolbar_width, 
-                                     height=50,
-                                     pady = 10, 
-                                     padx=10)
-        nav_frame.grid(column=0, row=0)
+        button_size = 40
+        top_label_height = 20
+        nav_frame_height = button_size + top_label_height + 5
         
-        label = Label(nav_frame, text="Image Navigator:", bg=None)
-        label.grid(row=0, column=0, columnspan=3)
+        nav_frame = Frame(self.toolbar_frame, bg='black', 
+                                     width=self.toolbar_width, 
+                                     height=nav_frame_height)
+        
+        nav_frame.place(x=0, y=0, height=nav_frame_height, 
+                        width = self.toolbar_width)
+        
+        label = Label(nav_frame, text="Image Navigator", bg='black',
+                      fg='white', font='Helvetica 12 bold')
+        label.place(x=0, y=0, height=top_label_height, 
+                    width=self.toolbar_width)
+
+        self.nav_text_label = Label(nav_frame, bg='black', 
+                                    font='Helvetica 12 bold',
+                                    fg='white',
+                                    text="%d/%d" % (self.root_app.current_file+1, 
+                                                    len(self.root_app.file_list)))
+        self.nav_text_label.place(x=0, y=top_label_height, 
+                                  width=self.toolbar_width, 
+                                  height=button_size)        
         
         left_arrow = Image.open('img/left_arrow.png')
         right_arrow = ImageOps.mirror(left_arrow)      
         
-        
-        photo = ImageTk.PhotoImage(right_arrow.resize((30,30), 
+        photo = ImageTk.PhotoImage(right_arrow.resize((button_size,button_size), 
                                               Image.ANTIALIAS))
         self.right_button = Button(nav_frame, image=photo, 
-                                   bg='white', command=self._next_image)
+                                   bg='black', command=self._next_image)
         self.right_button.image = photo
-        self.right_button.grid(row=1, column=2)
+        self.right_button.place(x=self.toolbar_width - button_size - 10, 
+                                y=top_label_height, 
+                                width=button_size, 
+                                height=button_size)
         
         left_arrow = ImageOps.mirror(right_arrow)      
-        photo = ImageTk.PhotoImage(left_arrow.resize((30,30), 
+        photo = ImageTk.PhotoImage(left_arrow.resize((button_size,button_size), 
                                               Image.ANTIALIAS))
         self.left_button = Button(nav_frame, image=photo, 
-                       bg='white', command=self._previous_image)
+                       bg='black', command=self._previous_image)
         self.left_button.image = photo
-        self.left_button.grid(row=1, column=0)
+        self.left_button.place(x=10, 
+                               y=top_label_height, 
+                               width=button_size, 
+                               height=button_size)
         
-        self.nav_text_label = Label(nav_frame, bg=None, 
-                                    text="%d/%d" % (self.root_app.current_file+1, 
-                                                    len(self.root_app.file_list)))
-        self.nav_text_label.grid(row=1, column=1)
+
+        self.toolbar_cumulative_height = self.toolbar_cumulative_height + \
+            nav_frame_height
 
     def _next_image(self):
         self.root_app.current_file = min(self.root_app.current_file + 1, 
@@ -135,13 +159,30 @@ class Toolbar(object):
     
     def _delete_from_project_button(self):
         
-        button = Button(self.toolbar_frame,
+        button_width = 120
+        button_height = 50
+        
+        self
+        
+        frame = Frame(self.toolbar_frame, bg='black')
+        frame.place(x = 0, 
+                    y = self.toolbar_cumulative_height,
+                    width = self.toolbar_width,
+                    height = button_height + 20)
+        
+        button = Button(frame,
                             text="Remove from Project",
                             fg="black",
-                            command=self._delete_from_project,
-                            pady=10)
+                            command=self._delete_from_project)
         
-        button.grid(row=2, column=0, pady=5)
+        button.place(x=int(self.toolbar_width/2) - int(button_width/2), 
+                     y=10, 
+                     width=button_width, 
+                     height=button_height)
+
+        self.toolbar_cumulative_height = self.toolbar_cumulative_height + \
+            button_height + 20
+
     
     def _delete_from_project(self):
         
@@ -160,13 +201,33 @@ class Toolbar(object):
         
     def _draw_class_selection_menu(self):
         
-        self.root_app.selected_class = StringVar(self.toolbar_frame)
+        frame_height = 70
+        label_height = 20
+        
+                
+        frame = Frame(self.toolbar_frame, bg=None)
+        frame.place(x=0,
+                    y=self.toolbar_cumulative_height,
+                    height=frame_height,
+                    width = self.toolbar_width)
+
+        label = Label(frame, 
+                      text='Select Class', 
+                      bg='black',
+                      font='Helvetica 12 bold',
+                      fg='white')
+        label.place(x=0,y=0, height=label_height, width = self.toolbar_width)
+        
+        self.root_app.selected_class = StringVar(frame)
         self.root_app.selected_class.set(self.root_app.class_list[0])
-        option_menu = OptionMenu(self.toolbar_frame, 
+        option_menu = OptionMenu(frame, 
                                  self.root_app.selected_class,
                                  *self.root_app.class_list)
     
-        option_menu.grid(row=3, column=0)
+        option_menu.place(x=10, 
+                          y=label_height, 
+                          width = self.toolbar_width - 20, 
+                          height = frame_height-label_height)
         
 
 

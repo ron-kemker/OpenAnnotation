@@ -6,7 +6,7 @@ Created on Thu Dec 31 09:26:18 2020
 """
 
 import tkinter as tk
-from tkinter import Frame, Button, Canvas
+from tkinter import Frame, Button, Canvas, Label
 from PIL import ImageTk, Image
 
 from menu import AppMenu
@@ -36,7 +36,9 @@ class AnnotationTool(object):
         self.window_width = 1024
         self.window_height = 768
         self.toolbar_width = 150
-        self.image_frame_width = self.window_width - self.toolbar_width
+        self.footer_height = 25
+        self.canvas_width = self.window_width - self.toolbar_width
+        self.canvas_height = self.window_height - self.footer_height
         self.current_file = 0
         self.project_open = False
         self.saved = True
@@ -63,18 +65,21 @@ class AnnotationTool(object):
         self.background.pack()
                 
         # Create Load Screen Buttons
-        new_button = Button(self.background, text="New Project", width = 20,
+        new_button = Button(self.background, text="New Blank Project", 
+                            width = 20,
                             height=3, 
                             command=self.app_menu._new)
         new_button.grid(row=0, column=0, sticky='n', pady=2 )
 
-        load_button = Button(self.background, text="Load Project", width=20,
+        load_button = Button(self.background, text="Load Project", 
+                            width=20,
                             height=3, 
                             command=self.app_menu._open)
         load_button.grid(row=1, column=0, sticky='n', pady=2  )
 
-        quit_button = Button(self.background, text="Quit", width=20, 
-                             height=3, 
+        quit_button = Button(self.background, text="Quit", 
+                            width=20, 
+                            height=3, 
                             command=self.app_menu._quit)
         quit_button.grid(row=2, column=0, sticky='n', pady=2  )
         
@@ -92,54 +97,80 @@ class AnnotationTool(object):
         
         # Build Background Frame                       
         self.background = Frame(self.window,
-                                bg="black",
+                                bg="gray",
                                 width=self.window_width,
                                 height=self.window_height)
-        self.background.pack()
+        self.background.place(x=0, 
+                              y=0,
+                              width = self.window_width,
+                              height = self.window_height)
 
         # Draw Toolbar on Left
         toolbar = Toolbar(self)
         
         # Draw Canvas on Right        
         self.canvas_frame = Frame(self.background, bg='green',
-                    width=self.image_frame_width,
-                    height=self.window_height)
-        self.canvas_frame.grid(column=1, row=0)        
-        
-        self.aspect_ratio = max(self.img.size[0]/(self.image_frame_width),
-                                self.img.size[1]/(self.window_height)) 
-                            
-        new_size = (int(self.img.size[0]/self.aspect_ratio), 
-                    int(self.img.size[1]/self.aspect_ratio))
-        
-        
+                    width=self.canvas_width,
+                    height=self.canvas_height)
+        self.canvas_frame.place(x=self.toolbar_width,
+                                y=0, 
+                                width = self.canvas_width,
+                                height = self.canvas_height,
+                                )
         
         self.canvas = Canvas(self.canvas_frame,
-                                   width=self.image_frame_width, 
-                                   height=self.window_height)
-        self.canvas.pack()
+                                   width=self.canvas_width, 
+                                   height=self.canvas_height)
+        self.canvas.place(x=0,
+                         y=0, 
+                         width = self.canvas_width,
+                         height = self.canvas_height,
+                                )
         
-        pil_img = ImageTk.PhotoImage(self.img.resize(new_size, 
-                                              Image.ANTIALIAS))
-        self.canvas.image = pil_img
-        self.canvas.create_image(0, 0, anchor=tk.NW, image=pil_img)
+        footer_frame = Frame(self.background, 
+                             bg='black',
+                             height=self.footer_height,
+                             width=self.window_width,
+                             )
+        footer_frame.place(x=0, 
+                           y=self.canvas_height, 
+                           width=self.window_width,
+                           height = self.footer_height)
         
-        self.boxes = []
+        footer_label = Label(footer_frame, 
+                              text='AnnotationTool built by Ron Kemker',
+                              fg='white',
+                              bg='black')
+        footer_label.place(x=0, y=0)
         
-        for i, label in enumerate(self.annotations[self.current_file].bbox):
+        if len(self.annotations):
+            self.aspect_ratio = max(self.img.size[0]/(self.canvas_width),
+                                    self.img.size[1]/(self.canvas_height)) 
+                                
+            new_size = (int(self.img.size[0]/self.aspect_ratio), 
+                        int(self.img.size[1]/self.aspect_ratio))
+        
+            pil_img = ImageTk.PhotoImage(self.img.resize(new_size, 
+                                                  Image.ANTIALIAS))
+            self.canvas.image = pil_img
+            self.canvas.create_image(0, 0, anchor=tk.NW, image=pil_img)
             
-            left = label[1] / self.aspect_ratio
-            top = label[0] / self.aspect_ratio
-            right = label[3] / self.aspect_ratio
-            bottom = label[2] / self.aspect_ratio
-            color = self.colorspace[label[-1]]
+            self.boxes = []
             
-            box = InteractiveBox(left, top, right, bottom, color)
-            box.draw_box(self, i)
-            self.boxes.append(box)
+            for i, label in enumerate(self.annotations[self.current_file].bbox):
+                
+                left = label[1] / self.aspect_ratio
+                top = label[0] / self.aspect_ratio
+                right = label[3] / self.aspect_ratio
+                bottom = label[2] / self.aspect_ratio
+                color = self.colorspace[label[-1]]
+                
+                box = InteractiveBox(left, top, right, bottom, color)
+                box.draw_box(self, i)
+                self.boxes.append(box)
             
         # Only allow bounding boxes to be drawn if they can be tied to a class
-        if len(self.class_list):        
+        if len(self.class_list) and len(self.annotations):        
             self.canvas.bind("<Button-1>",self._on_click)
             self.canvas.bind("<ButtonRelease-1>",self._on_release)
             self.canvas.bind("<B1-Motion>", self._on_move_press)

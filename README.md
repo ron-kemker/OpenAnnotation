@@ -3,6 +3,10 @@ Open-Source Annotation Tool for Computer Vision Projects
  
 By [Ronald Kemker](https://www.linkedin.com/in/ronald-kemker-66250b115)
 
+## Current Version: 0.1 (Beta Release)
+- Projects support multi-class bounding box annotation
+- Export projects to CSV (for future use)
+
 ## Library Dependencies
 Required to Run Application:
 - [TKinter](https://tkdocs.com/index.html)
@@ -16,10 +20,6 @@ Required to Build Stand-Alone GUI Application:
 - [PyInstaller](https://www.pyinstaller.org/) 
 - [os](https://docs.python.org/3/library/os.html) 
 - [shutil](https://docs.python.org/3/library/shutil.html) 
-
-## Current Version: 0.1 (Beta Release)
-- Projects support multi-class bounding box annotation
-- Export projects to CSV (for future use)
 
 ## Future Work
 Follow the [project milestones](https://github.com/ron-kemker/OpenAnnotation/milestones) page to keep track of my plans going forward.

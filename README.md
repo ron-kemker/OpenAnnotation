@@ -6,7 +6,6 @@ Near-Term Tasks required for beta release:
     - Compile into executable
     - Drop down menu for classes contains color reference
     - Install file
-    - Prompt if you really want to delete the class
     
 Long-Term functionality should include:
     - Network labeling capability

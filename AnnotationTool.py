@@ -248,7 +248,8 @@ class AnnotationTool(object):
                    event.x,
                   self.boxes[box_id].bottom)
             self.boxes[box_id].right = event.x
-            self.annotations[self.current_file].bbox[box_id][3] = event.x
+            self.annotations[self.current_file].bbox[box_id][3] = event.x \
+                * self.aspect_ratio
         elif self.box_resize_mode == 'LEFT':
             self.canvas.coords(self.boxes[self.resize_box_id].rect, 
                    event.x, 
@@ -256,7 +257,8 @@ class AnnotationTool(object):
                    self.boxes[self.resize_box_id].right,
                    self.boxes[self.resize_box_id].bottom)
             self.boxes[self.resize_box_id].left = event.x
-            self.annotations[self.current_file].bbox[box_id][1] = event.x
+            self.annotations[self.current_file].bbox[box_id][1] = event.x \
+                * self.aspect_ratio
         elif self.box_resize_mode == 'TOP':
             self.canvas.coords(self.boxes[self.resize_box_id].rect, 
                    self.boxes[self.resize_box_id].left, 
@@ -264,7 +266,8 @@ class AnnotationTool(object):
                    self.boxes[self.resize_box_id].right,
                    self.boxes[self.resize_box_id].bottom)
             self.boxes[self.resize_box_id].top = event.y
-            self.annotations[self.current_file].bbox[box_id][0] = event.y
+            self.annotations[self.current_file].bbox[box_id][0] = event.y \
+                * self.aspect_ratio
         elif self.box_resize_mode == 'BOTTOM':
             self.canvas.coords(self.boxes[self.resize_box_id].rect, 
                    self.boxes[self.resize_box_id].left, 
@@ -272,7 +275,8 @@ class AnnotationTool(object):
                    self.boxes[self.resize_box_id].right,
                    event.y)
             self.boxes[self.resize_box_id].bottom = event.y
-            self.annotations[self.current_file].bbox[box_id][2] = event.y
+            self.annotations[self.current_file].bbox[box_id][2] = event.y \
+                * self.aspect_ratio
 
         elif not hasattr(self, 'rect'):
     

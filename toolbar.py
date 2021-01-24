@@ -204,8 +204,7 @@ class Toolbar(object):
         frame_height = 70
         label_height = 20
         
-                
-        frame = Frame(self.toolbar_frame, bg=None)
+        frame = Frame(self.toolbar_frame, bg='black')
         frame.place(x=0,
                     y=self.toolbar_cumulative_height,
                     height=frame_height,
@@ -228,18 +227,3 @@ class Toolbar(object):
                           y=label_height, 
                           width = self.toolbar_width - 20, 
                           height = frame_height-label_height)
-        
-
-
-
-if __name__ == "__main__":
-    
-    import types    
-
-    root_app = types.SimpleNamespace()
-    root_app.window_height = 768
-    root_app.toolbar_width = 150
-    root_app.current_file = 0
-       
-    obj_mgr = Toolbar(root_app)
-    obj_mgr.class_manager_window.mainloop()

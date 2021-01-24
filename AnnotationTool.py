@@ -312,8 +312,6 @@ class AnnotationTool(object):
         self.annotations[self.current_file].bbox = []
         self._draw_workspace()
         
-
-    
 if __name__ == "__main__":
     
     tool = AnnotationTool()

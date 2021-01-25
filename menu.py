@@ -44,7 +44,6 @@ class AppMenu(object):
 
         '''
         
-        
         # Add Menu to application window
         menu = Menu(self.root_app.window)
         self.root_app.window.config(menu=menu)

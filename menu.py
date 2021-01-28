@@ -526,7 +526,7 @@ class Annotation(object):
         self.rotation = -1
     
     def add_label(self, top, left, bottom, right, label):
-         '''
+        '''
         The Annotation object contains all of the relevant information for a
         single annotation.
         

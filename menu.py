@@ -91,8 +91,11 @@ class AppMenu(object):
             if len(self.root_app.annotations):
                 toolMenu.add_command(label="Reset Image", 
                                      command=self.root_app._reset_image)
+                
+        # This is the Help Menu        
         helpMenu = Menu(menu)
         menu.add_cascade(label="Help", menu=helpMenu)
+        # Create a popup with basic information about the program
         helpMenu.add_command(label="About OpenAnnotation", 
                              command=self.draw_about_box)
 
@@ -507,18 +510,33 @@ class AppMenu(object):
                     writer.writerow(row)
 
     def draw_about_box(self):
+        '''
+        Creates a popup Window that displays basic information about 
+        OpenAnnotation
+
+        Returns
+        -------
+        None.
+
+        '''
+        
+        # Open a popup window
         self.about_window = tk.Toplevel()
         self.about_window.title("About Open Annotation")  # to define the title
         self.about_window.geometry("400x200")
         
+        # Draw the canvas for the text
         canvas = Canvas(self.about_window, 
                         bg='white',
                         width=400, 
                         height=200)
         
+        # Read a file that contains the information for the about window
         f = open('data/about.txt', 'r')
         lines = f.readlines()
+        f.close()
         
+        # Draw that information onto the popup window
         for i, line in enumerate(lines):
             canvas.create_text(200, (i+1)*11 , 
                                font=('Arial', 10),

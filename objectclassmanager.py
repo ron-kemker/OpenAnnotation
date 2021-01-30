@@ -119,6 +119,7 @@ class ObjectClassManager(object):
         else:
             self.root_app.class_list[button_id] = new_class
             self.root_app.colorspace[new_class] = self.root_app.colorspace.pop(old_class)
+            self.root_app.class_count[new_class] = self.root_app.class_count.pop(old_class)
             
             self.rename_class_prompt.destroy()
             self.class_manager_frame.destroy()

@@ -91,6 +91,10 @@ class AppMenu(object):
             if len(self.root_app.annotations):
                 toolMenu.add_command(label="Reset Image", 
                                      command=self.root_app._reset_image)
+        helpMenu = Menu(menu)
+        menu.add_cascade(label="Help", menu=helpMenu)
+        helpMenu.add_command(label="About OpenAnnotation", 
+                             command=self.draw_about_box)
 
     def file_to_annotation(self, file):
         '''
@@ -501,7 +505,27 @@ class AppMenu(object):
                     row = [image.filename,image.label[b], box[1], box[0],
                            box[3],box[2],image.rotation]
                     writer.writerow(row)
+
+    def draw_about_box(self):
+        self.about_window = tk.Toplevel()
+        self.about_window.title("About Open Annotation")  # to define the title
+        self.about_window.geometry("400x200")
         
+        canvas = Canvas(self.about_window, 
+                        bg='white',
+                        width=400, 
+                        height=200)
+        
+        f = open('data/about.txt', 'r')
+        lines = f.readlines()
+        
+        for i, line in enumerate(lines):
+            canvas.create_text(200, (i+1)*11 , 
+                               font=('Arial', 10),
+                               text=line)
+            
+        canvas.pack()            
+        f.close()
         
 class Annotation(object):
     
@@ -549,3 +573,4 @@ class Annotation(object):
         '''              
         self.bbox.append([top, left, bottom, right, label])
         self.label.append(label)
+        

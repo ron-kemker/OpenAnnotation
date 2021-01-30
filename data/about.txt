@@ -1,0 +1,8 @@
+
+OpenAnnotation version 0.1
+
+By Ronald Kemker
+www.linkedin.com/in/ronald-kemker-66250b115
+
+Source Code is located at:
+https://github.com/ron-kemker/openannotation

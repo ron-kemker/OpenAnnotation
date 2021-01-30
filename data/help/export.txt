@@ -1,0 +1,16 @@
+Exporting Project to CSV
+
+Once the project is completly annotated, you'll want to be able to do something
+with it.  Right now, the project can be exported to Comma Separated Value (CSV)
+file format.  This can be opened up in Microsoft Excel or other software
+languages, e.g., Python has a csv reader/writer capability:
+
+    https://docs.python.org/3/library/csv.html
+
+To export the project that is currently open, click "File -> Export to CSV" and
+pick where you want to save the file using the popup dialog box.
+
+Each row corresponds to a single bounding box in the project. The format for 
+each row in the CSV file is:
+
+    filename, label, x0, y0, x1, y1, rotation

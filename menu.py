@@ -14,6 +14,8 @@ from tkinter import Frame, Label, Menu, Button
 from tkinter.filedialog import askopenfilename, asksaveasfilename, \
     askdirectory
 
+from help import HelpMenu
+
 class AppMenu(object):
    
     def __init__(self, root_app):
@@ -86,7 +88,7 @@ class AppMenu(object):
             toolMenu = Menu(menu)
             menu.add_cascade(label="Tools", menu=toolMenu)
             toolMenu.add_command(label="Class Manager", 
-                                 command=self.root_app._draw_object_class_manager)
+                            command=self.root_app._draw_object_class_manager)
             
             if len(self.root_app.annotations):
                 toolMenu.add_command(label="Reset Image", 
@@ -94,10 +96,16 @@ class AppMenu(object):
                 
         # This is the Help Menu        
         helpMenu = Menu(menu)
+        # Create a popup that Displays tutorial documentation for the user
         menu.add_cascade(label="Help", menu=helpMenu)
+        helpMenu.add_command(label="OpenAnnotation Documentation", 
+                             command=self.drawHelpMenu)
         # Create a popup with basic information about the program
         helpMenu.add_command(label="About OpenAnnotation", 
                              command=self.draw_about_box)
+
+    def drawHelpMenu(self):
+        HelpMenu(self)._draw_menu()        
 
     def file_to_annotation(self, file):
         '''

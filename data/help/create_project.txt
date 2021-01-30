@@ -1,0 +1,28 @@
+Starting a New Project
+
+1. You can create a new project by going to File -> New Project.
+
+2. Add images by clicking on "File -> Import File" (to add a single image) or 
+    "File -> Import Directory" (to add all images in a single directory).
+
+3. Open the Object Class Manager for the project by clicking "Tools -> Class 
+    Manager".  A popup window will appear.
+
+4. Use the text box to name the object class and click the "Add Class" button
+    to add it to the project.  You can also rename and remove object classes.
+    If you want to change the color, click on the colored box next to the class
+    and a popup dialog will appear to change the color.
+
+5. After the classes have been added to the project, there should be a dropdown
+    menu to select which object class to draw a bounding box for.  
+
+6. After selecting the corresponding class, click (and hold) on the image where
+    one of the corners should be drawn and drag the cursor to where the opposite
+    corner should be located.  Release the mouse button to draw the box.
+
+7. You can click and drag the box edges to move them in-and-out to modify the
+    bounding box.
+
+8. You can use the left and right arrows to navigate through the project and
+    annotate the remaining images. Make sure to save the project in "File ->
+    Save" to work on it later.

@@ -50,11 +50,13 @@ class AnnotationTool(object):
         self.top_colors_free = self.top_colors.copy()
         self.top_colors_used = []
         self.class_count = {}
+        
 
     def load_app(self):
         
         # Build Window
         self.window = tk.Tk()
+            
         self.window.title("Image Annotation Tool")  # to define the title
         self.window.geometry("%dx%d" % (self.window_width,self.window_height))
         self.app_menu._draw_menu()
@@ -65,23 +67,30 @@ class AnnotationTool(object):
         self.background.pack()
                 
         # Create Load Screen Buttons
-        new_button = Button(self.background, text="New Blank Project", 
+        self.new_button = Button(self.background, text="New Blank Project", 
                             width = 20,
                             height=3, 
                             command=self.app_menu._new)
-        new_button.grid(row=0, column=0, sticky='n', pady=2 )
+        self.new_button.grid(row=0, column=0, sticky='n', pady=2 )
 
-        load_button = Button(self.background, text="Load Project", 
+        self.new_wiz_button = Button(self.background, 
+                                     text="New Project Wizard", 
+                                     width = 20,
+                                     height=3, 
+                                     command=self.app_menu._new_project_wizard)
+        self.new_wiz_button.grid(row=1, column=0, sticky='n', pady=2 )
+
+        self.load_button = Button(self.background, text="Load Project", 
                             width=20,
                             height=3, 
                             command=self.app_menu._open)
-        load_button.grid(row=1, column=0, sticky='n', pady=2)
+        self.load_button.grid(row=2, column=0, sticky='n', pady=2)
 
-        quit_button = Button(self.background, text="Quit", 
+        self.quit_button = Button(self.background, text="Quit", 
                             width=20, 
                             height=3, 
                             command=self.app_menu._quit)
-        quit_button.grid(row=2, column=0, sticky='n', pady=2)
+        self.quit_button.grid(row=3, column=0, sticky='n', pady=2)
         
         self.window.mainloop()
         
@@ -297,7 +306,6 @@ class AnnotationTool(object):
         
     def _load_image_from_file(self):
         self.img = Image.open(self.file_list[self.current_file])
-        
         self.file_list[self.current_file]
         
         rot = self.annotations[self.current_file].rotation

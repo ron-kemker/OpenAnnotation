@@ -147,7 +147,7 @@ class AnnotationTool(object):
                            height = self.footer_height)
         
         footer_label = Label(footer_frame, 
-                              text='AnnotationTool built by Ron Kemker',
+                              text='OpenAnnotation built by Ron Kemker',
                               fg='white',
                               bg='black')
         footer_label.place(x=0, y=0)

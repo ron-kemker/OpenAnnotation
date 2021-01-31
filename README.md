@@ -15,6 +15,7 @@ Required to Run Application:
 - [exif](https://pypi.org/project/exif/)
 - [csv](https://docs.python.org/3/library/csv.html)
 - [random](https://docs.python.org/3/library/random.html)
+- [plum](https://pypi.org/project/plum-py/)
 
 Required to Build Stand-Alone GUI Application:
 - [PyInstaller](https://www.pyinstaller.org/) 

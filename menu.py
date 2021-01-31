@@ -10,7 +10,7 @@ import glob, exif, pickle, csv
 from PIL import Image
 from plum._exceptions import UnpackError
 import tkinter as tk
-from tkinter import Frame, Label, Menu, Button, Canvas
+from tkinter import Frame, Label, Menu, Button, Canvas, Entry
 from tkinter.filedialog import askopenfilename, asksaveasfilename, \
     askdirectory
 
@@ -98,6 +98,11 @@ class AppMenu(object):
                 toolMenu.add_command(label="Reset Image", 
                                      command=self.root_app._reset_image)
                 
+                toolMenu.add_command(label='Select Image #',
+                                     command=self.select_image)
+                
+                
+                
         # This is the Help Menu        
         helpMenu = Menu(menu)
         # Create a popup that Displays tutorial documentation for the user
@@ -107,6 +112,53 @@ class AppMenu(object):
         # Create a popup with basic information about the program
         helpMenu.add_command(label="About OpenAnnotation", 
                              command=self.draw_about_box)
+
+    def select_image(self):
+        
+        self.prompt = tk.Toplevel()
+        self.prompt.wm_title("Select Image")
+        self.prompt.geometry("%dx%d" % (400,200))
+        
+        self.prompt_frame = Frame(self.prompt,
+                                         height=200,
+                                         width=400)
+        self.prompt_frame.pack()
+        
+        label = Label(self.prompt_frame, 
+                      text="Move to Image #")
+        label.place(x=0, y=25, width=400, height=25)
+        
+        self.prompt_var = None
+        self.prompt_entry = Entry(self.prompt_frame, 
+                      textvariable=self.prompt_var)
+        self.prompt_entry.place(x=100, y=75, width=200, height=25)
+        
+        ok_button = Button(self.prompt_frame, 
+                            text="Ok",
+                            height=25,
+                            width=50,
+                            command=self.select_image_action)
+        ok_button.place(x=145, y=125, width=50, height=25)
+                    
+        cancel_button = Button(self.prompt_frame, 
+                              text="Cancel",
+                              command=self.prompt.destroy)
+        cancel_button.place(x=205, y=125, width=50, height=25)
+        
+
+    def select_image_action(self):
+        # Replace current_file with what is in the Entry box
+        entry_val = int(self.prompt_entry.get())-1
+        if entry_val >= 0 and entry_val < len(self.root_app.annotations): 
+            self.root_app.current_file = entry_val
+             
+            # Refresh GUI
+            self.root_app._load_image_from_file() 
+            self.root_app._draw_workspace()
+            # Destroy Prompt
+            self.prompt.destroy()
+        else:
+            print('Project Image Index Out of Bounds')
 
     def drawHelpMenu(self):
         HelpMenu(self)._draw_menu()        

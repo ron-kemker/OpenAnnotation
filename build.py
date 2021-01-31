@@ -19,3 +19,4 @@ PyInstaller.__main__.run([
 
 shutil.rmtree('build')
 shutil.copytree('img', 'dist/img')
+shutil.copytree('data', 'dist/data')

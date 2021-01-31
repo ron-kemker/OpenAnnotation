@@ -108,48 +108,76 @@ class AppMenu(object):
         # Create a popup that Displays tutorial documentation for the user
         menu.add_cascade(label="Help", menu=helpMenu)
         helpMenu.add_command(label="OpenAnnotation Documentation", 
-                             command=self.drawHelpMenu)
+                             command=HelpMenu(self)._draw_menu)
         # Create a popup with basic information about the program
         helpMenu.add_command(label="About OpenAnnotation", 
                              command=self.draw_about_box)
 
     def select_image(self):
+        '''
+        Displays a prompt to select which image in the project to skip ahead 
+        (or behind) to
+
+        Returns
+        -------
+        None.
+
+        '''
         
+        # Build Prompt Window
         self.prompt = tk.Toplevel()
         self.prompt.wm_title("Select Image")
         self.prompt.geometry("%dx%d" % (400,200))
         
-        self.prompt_frame = Frame(self.prompt,
+        
+        # Build Frame Inside Window
+        prompt_frame = Frame(self.prompt,
                                          height=200,
                                          width=400)
-        self.prompt_frame.pack()
+        prompt_frame.pack()
         
-        label = Label(self.prompt_frame, 
+        # Prompt label
+        label = Label(prompt_frame, 
                       text="Move to Image #")
         label.place(x=0, y=25, width=400, height=25)
         
-        self.prompt_var = None
-        self.prompt_entry = Entry(self.prompt_frame, 
-                      textvariable=self.prompt_var)
+        # The entry box
+        prompt_var = None
+        self.prompt_entry = Entry(prompt_frame, 
+                      textvariable=prompt_var)
         self.prompt_entry.place(x=100, y=75, width=200, height=25)
         
-        ok_button = Button(self.prompt_frame, 
+        # Ok/Cancel Buttons
+        ok_button = Button(prompt_frame, 
                             text="Ok",
                             height=25,
                             width=50,
                             command=self.select_image_action)
         ok_button.place(x=145, y=125, width=50, height=25)
                     
-        cancel_button = Button(self.prompt_frame, 
+        cancel_button = Button(prompt_frame, 
                               text="Cancel",
                               command=self.prompt.destroy)
         cancel_button.place(x=205, y=125, width=50, height=25)
         
 
     def select_image_action(self):
-        # Replace current_file with what is in the Entry box
+        '''
+        Retrieves a value from select_image Entry and sets the current_file to
+        that value
+
+        Returns
+        -------
+        None.
+
+        '''
+        
+        # Pull the value from the entry box
         entry_val = int(self.prompt_entry.get())-1
+        
+        # If a valid number is entered
         if entry_val >= 0 and entry_val < len(self.root_app.annotations): 
+            # Set the current file
             self.root_app.current_file = entry_val
              
             # Refresh GUI
@@ -159,9 +187,6 @@ class AppMenu(object):
             self.prompt.destroy()
         else:
             print('Project Image Index Out of Bounds')
-
-    def drawHelpMenu(self):
-        HelpMenu(self)._draw_menu()        
 
     def file_to_annotation(self, file):
         '''

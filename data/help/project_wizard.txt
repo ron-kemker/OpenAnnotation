@@ -1,0 +1,17 @@
+New Project with the "New Project Wizard"
+
+1. You can create a new project by going to File -> New Project Wizard.
+
+2. Two buttons on the left pane allow you to import a single image files or all 
+    files within a directory.
+
+3. The pane on the right contains the Object Class Manager.  Use the text box 
+    to name the object class and click the "Add Class" button to add it to the 
+    project.  You can also rename and remove object classes. If you want to 
+    change the color, click on the colored box next to the class and a popup 
+    dialog will appear to change the color.
+
+5. After the classes and files have been added to the project, you can click
+    the green button which will build the project.  Follow Steps 5-8 in the
+    "Starting a New Project" tutorial to begin your annotation effort.
+

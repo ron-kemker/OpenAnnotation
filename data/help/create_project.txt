@@ -1,6 +1,6 @@
 Starting a New Project
 
-1. You can create a new project by going to File -> New Project.
+1. You can create a new project by going to File -> New Blank Project.
 
 2. Add images by clicking on "File -> Import File" (to add a single image) or 
     "File -> Import Directory" (to add all images in a single directory).
@@ -17,8 +17,9 @@ Starting a New Project
     menu to select which object class to draw a bounding box for.  
 
 6. After selecting the corresponding class, click (and hold) on the image where
-    one of the corners should be drawn and drag the cursor to where the opposite
-    corner should be located.  Release the mouse button to draw the box.
+    one of the corners should be drawn and drag the cursor to where the 
+    opposite corner should be located.  Release the mouse button to draw the 
+    box.
 
 7. You can click and drag the box edges to move them in-and-out to modify the
     bounding box.

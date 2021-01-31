@@ -31,7 +31,7 @@ class HelpMenu(object):
         None.
 
         '''
-        self.root = root_app
+        self.root = root_app # AnnotationTool object
         self.window_width = 1024
         self.window_height = 768
         self.left_pane_width = 300

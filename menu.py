@@ -10,11 +10,12 @@ import glob, exif, pickle, csv
 from PIL import Image
 from plum._exceptions import UnpackError
 import tkinter as tk
-from tkinter import Frame, Label, Menu, Button
+from tkinter import Frame, Label, Menu, Button, Canvas
 from tkinter.filedialog import askopenfilename, asksaveasfilename, \
     askdirectory
 
 from help import HelpMenu
+from project_wizard import ProjectWizard
 
 class AppMenu(object):
    
@@ -54,9 +55,12 @@ class AppMenu(object):
         # "File" Menu for Creating/Managing Projects
         fileMenu = Menu(menu)
         menu.add_cascade(label="File", menu=fileMenu)
-        fileMenu.add_command(label="New Project", 
+        fileMenu.add_command(label="New Blank Project", 
                              command=self._new)
-        fileMenu.add_command(label="Open Project", command=self._open)
+        fileMenu.add_command(label="New Project Wizard", 
+                             command=self._new_project_wizard)
+        fileMenu.add_command(label="Open Project", 
+                             command=self._open)
         
         # If a project is open, allow that project to be saved/closed
         if self.root_app.project_open:
@@ -410,29 +414,37 @@ class AppMenu(object):
         # Refresh the menu
         self._draw_menu()
                    
-        # Redraw a blank background
+        # Redraw Background
         self.root_app.background = Frame(self.root_app.window,
                                 width=self.root_app.window_width,
                                 height=self.root_app.window_height)
         self.root_app.background.pack()
                 
-        # Create the Three Load Screen Buttons
-        new_button = Button(self.root_app.background, text="New Project", 
+        # Create Load Screen Buttons
+        self.root_app.new_button = Button(self.root_app.background, text="New Blank Project", 
                             width = 20,
                             height=3, 
                             command=self._new)
-        new_button.grid(row=0, column=0, sticky='n', pady=2 )
+        self.root_app.new_button.grid(row=0, column=0, sticky='n', pady=2 )
 
-        load_button = Button(self.root_app.background, text="Load Project", 
-                             width=20,
+        self.root_app.new_wiz_button = Button(self.root_app.background, 
+                                     text="New Project Wizard", 
+                                     width = 20,
+                                     height=3, 
+                                     command=self._new_project_wizard)
+        self.root_app.new_wiz_button.grid(row=1, column=0, sticky='n', pady=2 )
+
+        self.root_app.load_button = Button(self.root_app.background, text="Load Project", 
+                            width=20,
                             height=3, 
                             command=self._open)
-        load_button.grid(row=1, column=0, sticky='n', pady=2  )
+        self.root_app.load_button.grid(row=2, column=0, sticky='n', pady=2)
 
-        quit_button = Button(self.root_app.background, text="Quit", width=20, 
-                             height=3, 
+        self.root_app.quit_button = Button(self.root_app.background, text="Quit", 
+                            width=20, 
+                            height=3, 
                             command=self._quit)
-        quit_button.grid(row=2, column=0, sticky='n', pady=2  )
+        self.root_app.quit_button.grid(row=3, column=0, sticky='n', pady=2)
 
     def _quit(self):
         '''
@@ -549,10 +561,12 @@ class AppMenu(object):
             canvas.create_text(200, (i+1)*11 , 
                                font=('Arial', 10),
                                text=line)
-            
         canvas.pack()            
-        f.close()
-        
+
+    def _new_project_wizard(self):
+        self._new()
+        ProjectWizard(self)
+      
 class Annotation(object):
     
     def __init__(self, filename):

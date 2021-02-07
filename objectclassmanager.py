@@ -31,10 +31,8 @@ class ObjectClassManager(object):
         self.class_manager_window = tk.Toplevel()
         self.class_manager_window.wm_title("Object Class Manager")
         self.class_manager_window.geometry("%dx%d" % (400,400))
-
-
-
         self._add_object_class()
+
 
     def _choose_color(self, button_id):
         

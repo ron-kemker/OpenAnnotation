@@ -97,6 +97,9 @@ class AppMenu(object):
             toolMenu.add_command(label="Class Manager", 
                             command=self.root_app._draw_object_class_manager)
             
+            toolMenu.add_command(label='Options',
+                                 command=None)
+            
             if len(self.root_app.annotations):
                 toolMenu.add_command(label="Reset Image", 
                                      command=self.root_app._reset_image)
@@ -234,7 +237,7 @@ class AppMenu(object):
 
         '''
         
-        # Prompot for an image file to be imported
+        # Prompt for an image file(s) to be imported
         file = askopenfilename(filetypes=(("Image File", 
                                            self.root_app.file_ext),),
                                                 initialdir = "/",

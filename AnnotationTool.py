@@ -199,22 +199,23 @@ class AnnotationTool(object):
             if box.right_clicked(self.clicked[0], self.clicked[1]):
                 self.box_resize_mode = 'RIGHT'
                 self.resize_box_id = i
-                return
+                return True
             elif box.left_clicked(self.clicked[0], self.clicked[1]):
                 self.box_resize_mode = 'LEFT'
                 self.resize_box_id = i
-                return
+                return True
             elif box.top_clicked(self.clicked[0], self.clicked[1]):
                 self.box_resize_mode = 'TOP'
                 self.resize_box_id = i
-                return
+                return True
             elif box.bottom_clicked(self.clicked[0], self.clicked[1]):
                 self.box_resize_mode = 'BOTTOM'
                 self.resize_box_id = i
-                return
+                return True
         
         self.box_resize_mode = 'NEW'
-        
+        return True
+    
     def _on_release(self, event):
         
         if self.box_resize_mode == 'NEW':
@@ -224,7 +225,6 @@ class AnnotationTool(object):
             left = min(self.clicked[0], event.x)
             right = max(self.clicked[0], event.x)
             label = self.class_list.index(self.selected_class.get())
-            # idx = self.class_list.index(label)
             color = self.colorspace[label]
             
             box = InteractiveBox(self, left, top, right, bottom, color)
@@ -247,6 +247,7 @@ class AnnotationTool(object):
         self._draw_workspace()
         self.saved = False
         self.box_resize_mode = 'NEW'
+        return True
         
     def _on_move_press(self, event):
         
@@ -311,6 +312,9 @@ class AnnotationTool(object):
                                self.clicked[1],
                                event.x,
                                event.y)
+
+        return True
+
         
     def _load_image_from_file(self):
         self.img = Image.open(self.file_list[self.current_file])
@@ -326,8 +330,9 @@ class AnnotationTool(object):
             self.class_count[lbl] = self.class_count[lbl] - 1
         
         self.annotations[self.current_file].label = []
-        self.annotations[self.current_file].bbox = []
+        self.annotations[self.current_file].roi = []
         self._draw_workspace()
+        return True
         
 if __name__ == "__main__":
     

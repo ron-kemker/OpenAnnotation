@@ -9,6 +9,10 @@ import unittest, time, sys, random
 from  AnnotationTool import AnnotationTool
 from fileio import Annotation, ROI
 
+class MockImg(object):
+    def __init__(self, x=640, y=480):
+        self.size = [x, y]
+
 class Event(object):
     
     def __init__(self, x=0, y=0):
@@ -63,7 +67,7 @@ class TestAnnotationTool(unittest.TestCase):
         self.assertTrue(hasattr(tool, 'new_wiz_button'))
         self.assertTrue(hasattr(tool, 'load_button'))       
         self.assertTrue(hasattr(tool, 'quit_button'))
-
+        tool.window.destroy()
 
     def test_draw_object_class_manager(self):
 
@@ -77,27 +81,9 @@ class TestAnnotationTool(unittest.TestCase):
         # Functional tests
         self.assertTrue(hasattr(tool, 'obj_mgr'))
         self.assertEqual(tool, tool.obj_mgr.root_app)
+        tool.obj_mgr.class_manager_window.destroy()
 
-
-    # def _draw_workspace(self):
         
-    #     self.app_menu._draw_menu()
-        
-    #     self.background.destroy()
-        
-    #     # Build Background Frame                       
-    #     self.background = Frame(self.window,
-    #                             bg="gray",
-    #                             width=self.window_width,
-    #                             height=self.window_height)
-    #     self.background.place(x=0, 
-    #                           y=0,
-    #                           width = self.window_width,
-    #                           height = self.window_height)
-
-    #     # Draw Toolbar on Left
-    #     toolbar = Toolbar(self) 
-
     def test_draw_workspace(self):
         
         class MockImg(object):
@@ -148,8 +134,220 @@ class TestAnnotationTool(unittest.TestCase):
         self.assertTrue(hasattr(tool, 'aspect_ratio'))
         self.assertTrue(hasattr(tool, 'boxes'))        
         self.assertEqual(tool.aspect_ratio, 640/(1024-150))
+        self.assertEqual(3, len(tool.boxes))
+        tool.window.destroy()
+
+    def test_on_click(self):
+                    
+        tool = AnnotationTool()
+        tool.load_app(True)
+
+        # Annotation added
+        tool.annotations = []
+        tool.file_list = []
+        tool.class_list = ['winston', 'prince', 'duckie']
+        tool.colorspace = ['blue', 'green', 'red']
+        tool.current_file = 0
+        tool.img = MockImg()
+    
+        for i in range(5):
+            a = Annotation()
+            a.rotation = 3
+            tool.file_list.append('file%d.jpg' % i)
+            for p in range(3):
+                roi = ROI()
+                roi.push(0,0)
+                roi.push(100.0,100.0)
+                a.push(roi, random.randint(0,2))
+            tool.annotations.append(a)        
+        
+        tool._draw_workspace()
+                
+        # Click Top 
+        complete = tool._on_click(Event(10, 0))        
+        self.assertTrue(complete)
+        self.assertEqual('TOP', tool.box_resize_mode)
+        self.assertEqual(0, tool.resize_box_id)
+        
+        # Click Bottom
+        complete = tool._on_click(Event(10, 100/tool.aspect_ratio))        
+        self.assertTrue(complete)
+        self.assertEqual('BOTTOM', tool.box_resize_mode)
+        self.assertEqual(0, tool.resize_box_id)   
+        
+        # Click Left
+        complete = tool._on_click(Event(0, 60))        
+        self.assertTrue(complete)
+        self.assertEqual('LEFT', tool.box_resize_mode)
+        self.assertEqual(0, tool.resize_box_id)
+        
+        # Click Right        
+        complete = tool._on_click(Event(100/tool.aspect_ratio, 60))        
+        self.assertTrue(complete)
+        self.assertEqual('RIGHT', tool.box_resize_mode)
+        self.assertEqual(0, tool.resize_box_id)
+        
+        # Click elsewhere to create a new box
+        complete = tool._on_click(Event(60, 60))        
+        self.assertTrue(complete)
+        self.assertEqual('NEW', tool.box_resize_mode)
+        tool.window.destroy()
+
+    def test_on_release(self):
+        
+        tool = AnnotationTool()
+        tool.load_app(True)
+
+        # Annotation added
+        tool.annotations = []
+        tool.file_list = []
+        tool.class_list = ['winston', 'prince', 'duckie']
+        tool.colorspace = ['blue', 'green', 'red']
+        tool.class_count = [0 , 0 , 0]
+        tool.current_file = 0
+        tool.img = MockImg()
+    
+        for i in range(5):
+            a = Annotation()
+            a.rotation = 3
+            tool.file_list.append('file%d.jpg' % i)
+            tool.annotations.append(a)        
+        
+        tool._draw_workspace()
+                
+        tool._on_click(Event(10, 10)) 
+        
+        for i in range(11, 31):
+            tool._on_move_press(Event(i,i))
+        
+        complete = tool._on_release(Event(30, 30))
+        self.assertTrue(complete)
+        self.assertEqual(0,  tool.annotations[0].label[0])
+        self.assertEqual([1,0,0],  tool.class_count)
+        self.assertEqual([10*tool.aspect_ratio,10*tool.aspect_ratio], 
+                          tool.annotations[0].roi[0].points[0])
+        self.assertEqual([30*tool.aspect_ratio,30*tool.aspect_ratio], 
+                          tool.annotations[0].roi[0].points[1])        
+        self.assertFalse(tool.saved)
+        self.assertEqual(tool.box_resize_mode , 'NEW')
+        tool.window.destroy()
+
+    def test_on_move_press(self):
+
+        tool = AnnotationTool()
+        tool.load_app(True)
+
+        # Annotation added
+        tool.annotations = []
+        tool.file_list = []
+        tool.class_list = ['winston', 'prince', 'duckie']
+        tool.colorspace = ['blue', 'green', 'red']
+        tool.class_count = [0 , 0 , 0]
+        tool.current_file = 0
+        tool.img = MockImg()
+    
+        for i in range(5):
+            a = Annotation()
+            a.rotation = 3
+            tool.file_list.append('file%d.jpg' % i)
+            tool.annotations.append(a)        
+        
+        tool._draw_workspace()
+                
+        tool._on_click(Event(10, 10)) 
+        self.assertFalse(hasattr(tool, 'rect'))
+        complete = tool._on_move_press(Event(11,11))
+        self.assertTrue(complete)
+        self.assertTrue(hasattr(tool, 'rect'))
+
+        complete = tool._on_move_press(Event(12,12))
+        self.assertTrue(complete)        
+        self.assertTrue(hasattr(tool, 'rect'))
+        self.assertTrue(hasattr(tool, 'box_end'))
+
+        # Create a new Box
+        tool._on_click(Event(10, 10)) 
+        for i in range(11, 26):
+            tool._on_move_press(Event(i,i))
+        tool._on_release(Event(25, 25))
 
 
+        tool.resize_box_id = 0
+        tool.box_resize_mode = 'RIGHT'
+        self.assertEqual(tool.annotations[0].roi[0].points[1], 
+                          [25*tool.aspect_ratio , 25*tool.aspect_ratio])
+        complete = tool._on_move_press(Event(20,25))
+        
+        self.assertTrue(complete)               
+        self.assertEqual(tool.annotations[0].roi[0].points[1], 
+                          [20*tool.aspect_ratio , 25*tool.aspect_ratio])
+
+
+        tool.box_resize_mode = 'LEFT'
+        self.assertEqual(tool.annotations[0].roi[0].points[0], 
+                          [10*tool.aspect_ratio , 10*tool.aspect_ratio])
+        complete = tool._on_move_press(Event(15,10))
+        
+        self.assertTrue(complete)               
+        self.assertEqual(tool.annotations[0].roi[0].points[0], 
+                          [15*tool.aspect_ratio , 10*tool.aspect_ratio])
+        
+        
+        tool.box_resize_mode = 'TOP'
+        self.assertEqual(tool.annotations[0].roi[0].points[0], 
+                          [15*tool.aspect_ratio , 10*tool.aspect_ratio])
+        complete = tool._on_move_press(Event(15,15))
+        
+        self.assertTrue(complete)               
+        self.assertEqual(tool.annotations[0].roi[0].points[0], 
+                          [15*tool.aspect_ratio , 15*tool.aspect_ratio])
+        
+        
+        tool.box_resize_mode = 'BOTTOM'
+        self.assertEqual(tool.annotations[0].roi[0].points[1], 
+                          [20*tool.aspect_ratio , 25*tool.aspect_ratio])
+        complete = tool._on_move_press(Event(20,20))
+        
+        self.assertTrue(complete)               
+        self.assertEqual(tool.annotations[0].roi[0].points[1], 
+                          [20*tool.aspect_ratio , 20*tool.aspect_ratio])
+        tool.window.destroy()
+        
+
+    def test_reset_image(self):
+        
+        tool = AnnotationTool()
+        tool.load_app(True)   
+        
+        # Annotation added
+        tool.annotations = []
+        tool.file_list = []
+        tool.class_list = ['winston', 'prince', 'duckie']
+        tool.colorspace = ['blue', 'green', 'red']
+        tool.current_file = 0
+        tool.class_count = [0 , 15 , 0]
+        tool.img = MockImg()
+    
+        for i in range(5):
+            a = Annotation()
+            a.rotation = 3
+            tool.file_list.append('file%d.jpg' % i)
+            for p in range(3):
+                roi = ROI()
+                roi.push(0,0)
+                roi.push(100.0,100.0)
+                a.push(roi, 1)
+            tool.annotations.append(a)        
+        
+        tool._draw_workspace()        
+        
+        self.assertEqual(tool.annotations[tool.current_file].size(), 3)
+        complete = tool._reset_image()
+        self.assertEqual(tool.annotations[tool.current_file].size(), 0)
+
+        self.assertTrue(complete)
+        
+        tool.window.destroy()
 
 if __name__ == '__main__':
     unittest.main()

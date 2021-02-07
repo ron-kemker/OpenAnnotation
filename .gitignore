@@ -127,3 +127,4 @@ dmypy.json
 *.JPG
 unittests/__init__.py
 __init__.py
+*.oaf

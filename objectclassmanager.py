@@ -39,12 +39,12 @@ class ObjectClassManager(object):
     def _choose_color(self, button_id):
         
         color_code = colorchooser.askcolor(title="Choose Color")
-        class_id = self.root_app.class_list[button_id]
+        # class_id = self.root_app.class_list[button_id]
         
-        if self.root_app.colorspace[class_id] in self.root_app.top_colors:
-            self.root_app.top_colors_free.insert(0, self.root_app.colorspace[class_id])
-            self.root_app.top_colors_used.remove(self.root_app.colorspace[class_id])
-        self.root_app.colorspace[class_id] = color_code[1]
+        if self.root_app.colorspace[button_id] in self.root_app.top_colors:
+            self.root_app.top_colors_free.insert(0, self.root_app.colorspace[button_id])
+            self.root_app.top_colors_used.remove(self.root_app.colorspace[button_id])
+        self.root_app.colorspace[button_id] = color_code[1]
         self.class_manager_frame.destroy()
         self._add_object_class()   
         self.root_app.saved = False
@@ -69,7 +69,7 @@ class ObjectClassManager(object):
             color_button = Button(self.class_manager_frame, 
                                   width=1, 
                                   height=1,
-                                  bg=self.root_app.colorspace[c],
+                                  bg=self.root_app.colorspace[i],
                                   command=lambda i=i: self._choose_color(i))
             
 
@@ -86,7 +86,7 @@ class ObjectClassManager(object):
             remove_button.grid(row=i+1, column=3, pady=1)
             
             
-            instances = self.root_app.class_count[c]
+            instances = self.root_app.class_count[i]
             instance_label = Label(self.class_manager_frame, 
                                    text=' %d labeled instances.' % instances)
             instance_label.grid(row=i+1, column=4)
@@ -117,10 +117,7 @@ class ObjectClassManager(object):
         if new_class == '':
             print('Field was empty.  Please provide a new class name.')
         else:
-            self.root_app.class_list[button_id] = new_class
-            self.root_app.colorspace[new_class] = self.root_app.colorspace.pop(old_class)
-            self.root_app.class_count[new_class] = self.root_app.class_count.pop(old_class)
-            
+            self.root_app.class_list[button_id] = new_class            
             self.rename_class_prompt.destroy()
             self.class_manager_frame.destroy()
             self._add_object_class()
@@ -181,9 +178,9 @@ class ObjectClassManager(object):
             else:
                 col = "#%06x" % random.randint(0, 0xFFFFFF)
                 
-            self.root_app.colorspace[new_class] = col
+            self.root_app.colorspace.append(col)
             self.root_app.class_list.append(new_class)
-            self.root_app.class_count[new_class] = 0
+            self.root_app.class_count.append(0)
         self.class_manager_frame.destroy()
         self._add_object_class()
     
@@ -211,22 +208,29 @@ class ObjectClassManager(object):
 
         
     def _remove_class(self, button_id):
-        color = self.root_app.colorspace[self.root_app.class_list[button_id]]
+        color = self.root_app.colorspace[button_id]
         
         if color in self.root_app.top_colors:
             self.root_app.top_colors_free.insert(0, color)
             self.root_app.top_colors_used.remove(color)            
         
-        class_label = self.root_app.class_list.pop(button_id)
-        del self.root_app.colorspace[class_label]
-        del self.root_app.class_count[class_label]
+        # class_label = self.root_app.class_list.pop(button_id)
+        self.root_app.colorspace.pop(button_id)
+        self.root_app.class_count.pop(button_id)
+        self.root_app.class_list.pop(button_id)
 
-        for annotation in self.root_app.annotations:
-            indices = [i for i, x in enumerate(annotation.label) if x == class_label]
-            for ind in sorted(indices, reverse = True):  
-                del annotation.label[ind] 
-                del annotation.bbox[ind]
-
+        for i, annotation in enumerate(self.root_app.annotations):
+            deleted = 0
+            num_roi = annotation.size()
+            for ii in range(num_roi):
+                class_id = self.root_app.annotations[i].label[ii-deleted]
+                if class_id == button_id:
+                    self.root_app.annotations[i].pop(ii-deleted)
+                    deleted += 1
+                elif class_id > button_id:
+                    self.root_app.annotations[i].label[ii-deleted] =\
+                        self.root_app.annotations[i].label[ii-deleted] - 1
+        
         self.class_manager_frame.destroy()
         self._add_object_class() 
 

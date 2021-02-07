@@ -13,6 +13,7 @@ from menu import AppMenu
 from objectclassmanager import ObjectClassManager
 from toolbar import Toolbar
 from interactivebox import InteractiveBox
+from fileio import ROI
 
 class AnnotationTool(object):
     
@@ -30,8 +31,6 @@ class AnnotationTool(object):
         None.
 
         '''
-        
-        self.class_list = []
         self.file_ext = ['.jpg', '.png']
         self.window_width = 1024
         self.window_height = 768
@@ -39,18 +38,11 @@ class AnnotationTool(object):
         self.footer_height = 25
         self.canvas_width = self.window_width - self.toolbar_width
         self.canvas_height = self.window_height - self.footer_height
-        self.current_file = 0
         self.project_open = False
         self.saved = True
         self.app_menu = AppMenu(self)
-
-        self.colorspace = {}
         self.top_colors = ['Blue', 'Red', 'Green', 'Cyan', 'Magenta', 
                            'Yellow'] 
-        self.top_colors_free = self.top_colors.copy()
-        self.top_colors_used = []
-        self.class_count = {}
-        
 
     def load_app(self):
         
@@ -96,7 +88,7 @@ class AnnotationTool(object):
         
     def _draw_object_class_manager(self):
         
-        obj_mgr = ObjectClassManager(self)
+        self.obj_mgr = ObjectClassManager(self)
         
     def _draw_workspace(self):
         
@@ -166,13 +158,16 @@ class AnnotationTool(object):
             
             self.boxes = []
             
-            for i, lbl in enumerate(self.annotations[self.current_file].bbox):
+            for i, roi in enumerate(self.annotations[self.current_file].roi):
                 
-                left = lbl[1] / self.aspect_ratio
-                top = lbl[0] / self.aspect_ratio
-                right = lbl[3] / self.aspect_ratio
-                bottom = lbl[2] / self.aspect_ratio
-                color = self.colorspace[lbl[-1]]
+                left, top, right, bottom = roi.getBox()
+                lbl = self.annotations[self.current_file].label[i]
+                
+                left = left / self.aspect_ratio
+                top = top / self.aspect_ratio
+                right = right / self.aspect_ratio
+                bottom = bottom / self.aspect_ratio
+                color = self.colorspace[lbl]
                 
                 box = InteractiveBox(left, top, right, bottom, color)
                 box.draw_box(self, i)
@@ -217,25 +212,26 @@ class AnnotationTool(object):
             bottom = max(self.clicked[1], event.y)
             left = min(self.clicked[0], event.x)
             right = max(self.clicked[0], event.x)
-            label = self.selected_class.get()
-            color = self.colorspace[self.selected_class.get()]
+            label = self.class_list.index(self.selected_class.get())
+            # idx = self.class_list.index(label)
+            color = self.colorspace[label]
             
             box = InteractiveBox(left, top, right, bottom, color)
             
             self.canvas.delete(self.rect)
             del self.rect
-            box.draw_box(self, len(self.annotations[self.current_file].bbox))
+            box.draw_box(self, len(self.annotations[self.current_file].roi))
             
             top = self.aspect_ratio * top
             bottom = self.aspect_ratio * bottom
             left = self.aspect_ratio * left
             right = self.aspect_ratio * right
             
-            self.annotations[self.current_file].add_label(top, 
-                                                          left, 
-                                                          bottom, 
-                                                          right, 
-                                                          label)
+            roi = ROI()
+            roi.push(left, top)
+            roi.push(right, bottom)
+            self.annotations[self.current_file].push(roi,label)
+            
             self.class_count[label] = self.class_count[label] + 1
         self._draw_workspace()
         self.saved = False
@@ -257,8 +253,8 @@ class AnnotationTool(object):
                    event.x,
                   self.boxes[box_id].bottom)
             self.boxes[box_id].right = event.x
-            self.annotations[self.current_file].bbox[box_id][3] = event.x \
-                * self.aspect_ratio
+            self.annotations[self.current_file].roi[box_id].points[1][0] =\
+                event.x * self.aspect_ratio
         elif self.box_resize_mode == 'LEFT':
             self.canvas.coords(self.boxes[self.resize_box_id].rect, 
                    event.x, 
@@ -266,8 +262,8 @@ class AnnotationTool(object):
                    self.boxes[self.resize_box_id].right,
                    self.boxes[self.resize_box_id].bottom)
             self.boxes[self.resize_box_id].left = event.x
-            self.annotations[self.current_file].bbox[box_id][1] = event.x \
-                * self.aspect_ratio
+            self.annotations[self.current_file].roi[box_id].points[0][0] =\
+                event.x * self.aspect_ratio
         elif self.box_resize_mode == 'TOP':
             self.canvas.coords(self.boxes[self.resize_box_id].rect, 
                    self.boxes[self.resize_box_id].left, 
@@ -275,8 +271,8 @@ class AnnotationTool(object):
                    self.boxes[self.resize_box_id].right,
                    self.boxes[self.resize_box_id].bottom)
             self.boxes[self.resize_box_id].top = event.y
-            self.annotations[self.current_file].bbox[box_id][0] = event.y \
-                * self.aspect_ratio
+            self.annotations[self.current_file].roi[box_id].points[0][1] =\
+                event.y * self.aspect_ratio
         elif self.box_resize_mode == 'BOTTOM':
             self.canvas.coords(self.boxes[self.resize_box_id].rect, 
                    self.boxes[self.resize_box_id].left, 
@@ -284,12 +280,13 @@ class AnnotationTool(object):
                    self.boxes[self.resize_box_id].right,
                    event.y)
             self.boxes[self.resize_box_id].bottom = event.y
-            self.annotations[self.current_file].bbox[box_id][2] = event.y \
-                * self.aspect_ratio
+            self.annotations[self.current_file].roi[box_id].points[1][1] =\
+                event.y * self.aspect_ratio
 
         elif not hasattr(self, 'rect'):
     
-            color = self.colorspace[self.selected_class.get()]
+            label = self.selected_class.get()
+            color = self.colorspace[self.class_list.index(label)]
             self.rect = self.canvas.create_rectangle(self.clicked[0], 
                                                      self.clicked[1], 
                                                      self.clicked[0], 

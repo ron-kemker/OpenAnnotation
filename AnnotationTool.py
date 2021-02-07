@@ -41,8 +41,8 @@ class AnnotationTool(object):
         self.project_open = False
         self.saved = True
         self.app_menu = AppMenu(self)
-        self.top_colors = ['Blue', 'Red', 'Green', 'Cyan', 'Magenta', 
-                           'Yellow'] 
+        self.top_colors = ['#0000FF', '#FF0000', '#00FF00', '#00FFFF', 
+                           '#FF00FF', '#FFFF00'] 
 
     def load_app(self):
         

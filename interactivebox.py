@@ -121,7 +121,7 @@ class InteractiveBox(object):
       
     def delete_box(self, box_id):
         lbl = self.root_app.annotations[self.image_id].label[box_id]
-        self.root_app.annotations[self.image_id].bbox.pop(box_id)
-        self.root_app.annotations[self.image_id].label.pop(box_id)
+        self.root_app.annotations[self.image_id].pop(box_id)
+        # idx = self.root_app.class_list.index(lbl)
         self.root_app.class_count[lbl] = self.root_app.class_count[lbl] - 1
         self.root_app._draw_workspace()        

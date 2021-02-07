@@ -44,7 +44,7 @@ class AnnotationTool(object):
         self.top_colors = ['#0000FF', '#FF0000', '#00FF00', '#00FFFF', 
                            '#FF00FF', '#FFFF00'] 
 
-    def load_app(self):
+    def load_app(self, test=False):
         
         # Build Window
         self.window = tk.Tk()
@@ -84,7 +84,8 @@ class AnnotationTool(object):
                             command=self.app_menu._quit)
         self.quit_button.grid(row=3, column=0, sticky='n', pady=2)
         
-        self.window.mainloop()
+        if not test:
+            self.window.mainloop()
         
     def _draw_object_class_manager(self):
         

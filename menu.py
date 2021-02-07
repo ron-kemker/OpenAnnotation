@@ -6,7 +6,8 @@ Created on Mon Jan 18 21:25:58 2021
 """
 
 # External Dependencies
-import glob, exif, pickle, csv
+import numpy as np
+import glob, exif, csv
 from PIL import Image
 from plum._exceptions import UnpackError
 import tkinter as tk
@@ -16,6 +17,7 @@ from tkinter.filedialog import askopenfilename, asksaveasfilename, \
 
 from help import HelpMenu
 from project_wizard import ProjectWizard
+from fileio import Annotation, SaveOAF, LoadOAF
 
 class AppMenu(object):
    
@@ -88,6 +90,7 @@ class AppMenu(object):
         #    Class Manager : Opens new window that allows classes to be added,
         #                  removed, or changed.
         #    Reset Image : Delete all annotations currently in the image
+        #    Selection Image # : Quickly move to other images in the project
         if self.root_app.project_open:
             toolMenu = Menu(menu)
             menu.add_cascade(label="Tools", menu=toolMenu)
@@ -203,7 +206,7 @@ class AppMenu(object):
 
         '''
         
-        self.root_app.annotations.append(Annotation(file))
+        self.root_app.annotations.append(Annotation())
         
         # EXIF data is not present in all images (e.g., png files).  If there
         # is EXIF data, use it to figure out how the image needs to be rotated.
@@ -259,8 +262,8 @@ class AppMenu(object):
             
             # The project needs to be saved
             self.root_app.saved = False       
-                
-    def _import_files_in_directory(self):
+                    
+    def _import_files_in_directory(self, new_dir=None):
         '''
         This imports an entire directory of images into the project.        
 
@@ -271,7 +274,8 @@ class AppMenu(object):
         '''
         
         # Prompt for a directory to search for imagery
-        new_dir = askdirectory()
+        if not new_dir:
+            new_dir = askdirectory()
         
         # If no directory selected, exit function
         if not new_dir:
@@ -321,12 +325,31 @@ class AppMenu(object):
         # filename
         self.root_app.annotations = [] 
         
-        # Refresh GUI (which should be empty)
-        self.root_app._draw_workspace()
-        
         # Empty project doesn't need to be saved
         self.root_app.saved = True
-  
+
+        # All colors from the top colors list are available for assignment
+        self.root_app.top_colors_free = self.root_app.top_colors.copy()
+        
+        # None of the top colors are currently being used
+        self.root_app.top_colors_used = []
+        
+        # There are no classes to assign counts to
+        self.root_app.class_count = []
+        
+        # Start with the first image in the project
+        self.root_app.current_file = 0
+        
+        # There are no classes in a new project
+        self.root_app.class_list = []
+        
+        # There are no colors assigned to the project
+        self.root_app.colorspace = []
+
+        # Refresh GUI (which should be empty)
+        self.root_app._draw_workspace()
+
+
     def _open(self):
         '''
         Open a saved project into the application.
@@ -338,27 +361,39 @@ class AppMenu(object):
         '''
         
         # Prompt for what project should be opened
-        file_name = askopenfilename(filetypes=(("PKL files","*.pkl"),),
+        filename = askopenfilename(filetypes=(("OAF files","*.oaf"),),
                                                 initialdir = "/",
                                                 title = "Select file")
         
         # If no project is selected, there is no project to open
-        if not file_name:
+        if not filename:
             return
         
         # Load the project and update the project variables with where it was
         # last saved
-        with open(file_name, 'rb') as f:
-            mat = pickle.load(f)
-        self.root_app.annotations = mat['annotations']
-        self.root_app.file_list = mat['file_list']
-        self.root_app.class_list = mat['class_list']
-        self.root_app.current_file = mat['current_file']
-        self.root_app.file_ext = mat['file_ext']
-        self.root_app.colorspace = mat['colorspace']
-        self.root_app.top_colors_free = mat['top_colors_free']
-        self.root_app.top_colors_used = mat['top_colors_used']
-        self.root_app.class_count = mat['class_count']
+        self.root_app.annotations,self.root_app.file_list,\
+           self.root_app.class_list,self.root_app.colorspace,\
+               self.root_app.current_file = LoadOAF(filename)        
+        
+        # Track free/used top colors
+        self.root_app.top_colors_used = []
+        self.root_app.top_colors_free = []
+        
+        for key in self.root_app.top_colors:
+            
+            if key in self.root_app.colorspace:
+                self.root_app.top_colors_used.append(key)
+            else:
+                self.root_app.top_colors_free.append(key)
+        
+        
+        class_count = np.zeros((len(self.root_app.class_list),),dtype=np.int32)
+        
+        for annotation in self.root_app.annotations:
+           for label in annotation.label:
+               class_count[label] += 1
+         
+        self.root_app.class_count = list(class_count)
 
         # Already saved project doesn't need to be saved again
         self.root_app.saved = True
@@ -375,7 +410,7 @@ class AppMenu(object):
     def _save(self):
         '''
         Command that saves the project.  Currently puts all of the relevant
-        information into a pickle file.
+        information into an OAF file.
 
         Returns
         -------
@@ -384,29 +419,34 @@ class AppMenu(object):
         '''
  
         # Prompt where the files will be saved to
-        file_name = asksaveasfilename(filetypes=(("PKL files","*.pkl"),),
+        filename = asksaveasfilename(filetypes=(("OAF files","*.oaf"),),
                                                 initialdir = "/",
                                                 title = "Select file")    
 
         # If no filename is specified, then exit the save command
-        if not file_name:
+        if not filename:
             return
     
-        # Dictionary that will be pickled
-        save_dict = {'annotations': self.root_app.annotations,
-                     'file_list': self.root_app.file_list,
-                     'class_list': self.root_app.class_list,
-                     'current_file':self.root_app.current_file,
-                     'file_ext': self.root_app.file_ext,
-                     'colorspace': self.root_app.colorspace,
-                     'top_colors_free': self.root_app.top_colors_free,
-                     'top_colors_used': self.root_app.top_colors_used,
-                     'class_count' : self.root_app.class_count,                     
-                     }
+        # Save as filename.oaf
+        SaveOAF(filename, 
+                self.root_app.annotations, 
+                self.root_app.file_list, 
+                self.root_app.class_list, 
+                self.root_app.colorspace, 
+                self.root_app.current_file)
+    
+        # # Dictionary that will be pickled
+        # save_dict = {'annotations': self.root_app.annotations,
+        #              'file_list': self.root_app.file_list,
+        #              'class_list': self.root_app.class_list,
+        #              'current_file':self.root_app.current_file,
+        #              'colorspace': self.root_app.colorspace,
+        #              'class_count' : self.root_app.class_count,                     
+        #              }
         
-        # Save the .pkl file
-        with open(file_name, "wb") as f:
-            pickle.dump(save_dict, f)
+        # # Save the .pkl file
+        # with open(file_name, "wb") as f:
+        #     pickle.dump(save_dict, f)
             
         # The file has now been saved
         self.root_app.saved = True
@@ -643,51 +683,4 @@ class AppMenu(object):
     def _new_project_wizard(self):
         self._new()
         ProjectWizard(self)
-      
-class Annotation(object):
-    
-    def __init__(self, filename):
-        '''
-        The Annotation object contains all of the relevant information for a
-        single annotation.
-        
-        Parameters
-        ----------
-        filename : STRING
-            Contains the path and filename of the image that will be annotated
-        
-        Returns
-        -------
-        None.
-    
-        '''  
-        self.filename = filename
-        self.bbox = []
-        self.label = []
-        self.rotation = -1
-    
-    def add_label(self, top, left, bottom, right, label):
-        '''
-        The Annotation object contains all of the relevant information for a
-        single annotation.
-        
-        Parameters
-        ----------
-        top : NUMERIC
-            Top-most y-coordinate (y0) for the bounding box
-        left : NUMERIC
-            Left-most x-coordinate (x0) for the bounding box
-        bottom : NUMERIC
-            Bottom-most y-coordinate (y1) for the bounding box
-        right : NUMERIC
-            Right-most x-coordinate (x1) for the bounding box
-        label : STRING
-            The truth label for the corresponding bounding box
-        Returns
-        -------
-        None.
-    
-        '''              
-        self.bbox.append([top, left, bottom, right, label])
-        self.label.append(label)
-        
+              

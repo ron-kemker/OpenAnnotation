@@ -175,7 +175,7 @@ class ProjectWizard(object):
             color_button = Button(row_frame, 
                                   width=25, 
                                   height=25,
-                                  bg=self.root_app.colorspace[c],
+                                  bg=self.root_app.colorspace[i],
                                   command=lambda i=i: self._choose_color(i))
             color_button.place(x=175, y=0, width=25, height=25)
 
@@ -342,10 +342,7 @@ class ProjectWizard(object):
         None.
 
         '''
-        
-        # Original Object Class Name
-        old_class = self.root_app.class_list[button_id]
-        
+                
         # New name to rename the object class to
         new_class = self.rename_entry.get()
         
@@ -355,11 +352,7 @@ class ProjectWizard(object):
         else:
             # Replace name in class list
             self.root_app.class_list[button_id] = new_class
-            # Replace key in color space 
-            self.root_app.colorspace[new_class] = self.root_app.colorspace.pop(old_class)
-            # Replace key in class counter
-            self.root_app.class_count[new_class] = self.root_app.class_count.pop(old_class)
-            
+                       
             # Redraw Right pane in New Project Wizard
             self.rename_class_prompt.destroy()
             self._draw_right_pane()
@@ -453,13 +446,13 @@ class ProjectWizard(object):
                 col = "#%06x" % random.randint(0, 0xFFFFFF)
             
             # Add key/color combination to colorspace dictionary
-            self.root_app.colorspace[new_class] = col
+            self.root_app.colorspace.append(col)
             
             # Add new class name to class list
             self.root_app.class_list.append(new_class)
             
             # Initialize class count to 0
-            self.root_app.class_count[new_class] = 0
+            self.root_app.class_count.append(0)
             
         # Redraw right pane
         self._draw_right_pane()
@@ -480,8 +473,8 @@ class ProjectWizard(object):
 
         '''
         
-        # Remove the entry from the colorspace dictionary
-        color = self.root_app.colorspace[self.root_app.class_list[button_id]]
+        # # Remove the entry from the colorspace dictionary
+        color = self.root_app.colorspace.pop(button_id)
         
         # If this is a recommended color, readd it back to the "free" stack
         if color in self.root_app.top_colors:
@@ -489,9 +482,9 @@ class ProjectWizard(object):
             self.root_app.top_colors_used.remove(color)            
         
         # Remove the entry from the class list
-        class_label = self.root_app.class_list.pop(button_id)
-        del self.root_app.colorspace[class_label]
-        del self.root_app.class_count[class_label]
+        self.root_app.class_list.pop(button_id)
+        # self.root_app.colorspace.pop(button_id)
+        self.root_app.class_count.pop(button_id)
 
         # Redraw the right pane
         self._draw_right_pane()

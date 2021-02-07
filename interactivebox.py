@@ -10,7 +10,7 @@ from PIL import ImageTk, Image
 
 class InteractiveBox(object):
 
-    def __init__(self, left, top, right, bottom, color, line_width=5):
+    def __init__(self, root_app, left, top, right, bottom, color, line_width=5):
         '''
         This is the canvas tool where the image and annotations are drawn on.
         
@@ -24,6 +24,7 @@ class InteractiveBox(object):
     
         '''    
         
+        self.root_app = root_app
         self.left = left
         self.right = right
         self.top = top
@@ -50,14 +51,18 @@ class InteractiveBox(object):
                                 outline=self.color,
                                 width=self.line_width)
         
-        close_window_img = Image.open('img/close_window.jpg')
-        close_window_img = close_window_img.crop((100,100,720,720))
-
-        sz = self.close_button_size
-
-        photo = ImageTk.PhotoImage(close_window_img.resize((sz,sz), 
-                                              Image.ANTIALIAS))        
+        if self.root_app.window.winfo_ismapped():
         
+            close_window_img = Image.open('img/close_window.jpg')
+            close_window_img = close_window_img.crop((100,100,720,720))
+    
+            sz = self.close_button_size
+    
+            photo = ImageTk.PhotoImage(close_window_img.resize((sz,sz), 
+                                                  Image.ANTIALIAS))        
+        else:
+            photo = None
+            
         self.close_button = tk.Button(canvas, 
                         width = self.close_button_size, 
                         height = self.close_button_size,

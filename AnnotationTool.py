@@ -44,6 +44,7 @@ class AnnotationTool(object):
         self.top_colors = ['#0000FF', '#FF0000', '#00FF00', '#00FFFF', 
                            '#FF00FF', '#FFFF00'] 
 
+
     def load_app(self, test=False):
         
         # Build Window
@@ -86,10 +87,13 @@ class AnnotationTool(object):
         
         if not test:
             self.window.mainloop()
+
+        return True
         
     def _draw_object_class_manager(self):
         
         self.obj_mgr = ObjectClassManager(self)
+        return True
         
     def _draw_workspace(self):
         
@@ -144,16 +148,21 @@ class AnnotationTool(object):
                               fg='white',
                               bg='black')
         footer_label.place(x=0, y=0)
-        
+                
         if len(self.annotations):
             self.aspect_ratio = max(self.img.size[0]/(self.canvas_width),
                                     self.img.size[1]/(self.canvas_height)) 
                                 
             new_size = (int(self.img.size[0]/self.aspect_ratio), 
                         int(self.img.size[1]/self.aspect_ratio))
-        
-            pil_img = ImageTk.PhotoImage(self.img.resize(new_size, 
-                                                  Image.ANTIALIAS))
+            
+            if self.window.winfo_ismapped():
+
+                pil_img = ImageTk.PhotoImage(self.img.resize(new_size, 
+                                                      Image.ANTIALIAS))
+            else:
+                pil_img = None
+                
             self.canvas.image = pil_img
             self.canvas.create_image(0, 0, anchor=tk.NW, image=pil_img)
             
@@ -170,7 +179,7 @@ class AnnotationTool(object):
                 bottom = bottom / self.aspect_ratio
                 color = self.colorspace[lbl]
                 
-                box = InteractiveBox(left, top, right, bottom, color)
+                box = InteractiveBox(self, left, top, right, bottom, color)
                 box.draw_box(self, i)
                 self.boxes.append(box)
             
@@ -180,6 +189,7 @@ class AnnotationTool(object):
             self.canvas.bind("<ButtonRelease-1>",self._on_release)
             self.canvas.bind("<B1-Motion>", self._on_move_press)
 
+        return True
 
     def _on_click(self, event):
         
@@ -217,7 +227,7 @@ class AnnotationTool(object):
             # idx = self.class_list.index(label)
             color = self.colorspace[label]
             
-            box = InteractiveBox(left, top, right, bottom, color)
+            box = InteractiveBox(self, left, top, right, bottom, color)
             
             self.canvas.delete(self.rect)
             del self.rect

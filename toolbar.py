@@ -68,9 +68,11 @@ class Toolbar(object):
         right_arrow = Image.open('img/right_curve_arrow.png')
         left_arrow = ImageOps.mirror(right_arrow)      
         
-        
-        photo = ImageTk.PhotoImage(right_arrow.resize((30,30), 
-                                              Image.ANTIALIAS))
+        if self.root_app.window.winfo_ismapped():
+            photo = ImageTk.PhotoImage(right_arrow.resize((30,30), 
+                                                  Image.ANTIALIAS))
+        else:
+            photo = None
         self.right_button = Button(rot_frame, image=photo, 
                                    bg='white', command=self._rotate_right)
         self.right_button.image = photo
@@ -131,25 +133,32 @@ class Toolbar(object):
                                   width=self.toolbar_width, 
                                   height=button_size)        
         
-        left_arrow = Image.open('img/left_arrow.png')
-        right_arrow = ImageOps.mirror(left_arrow)      
         
-        photo = ImageTk.PhotoImage(right_arrow.resize((button_size,button_size), 
+        # Only load images when not testing
+        if self.root_app.window.winfo_ismapped():
+ 
+            left_arrow = Image.open('img/left_arrow.png')
+            right_arrow = ImageOps.mirror(left_arrow)      
+            left_photo = ImageTk.PhotoImage(left_arrow.resize((button_size,button_size), 
                                               Image.ANTIALIAS))
-        self.right_button = Button(nav_frame, image=photo, 
+            right_photo = ImageTk.PhotoImage(right_arrow.resize((button_size,button_size), 
+                                                  Image.ANTIALIAS))
+        else:
+            left_photo = None
+            right_photo = None
+            
+        self.right_button = Button(nav_frame, image=right_photo, 
                                    bg='black', command=self._next_image)
-        self.right_button.image = photo
+        self.right_button.image = right_photo
         self.right_button.place(x=self.toolbar_width - button_size - 10, 
                                 y=top_label_height, 
                                 width=button_size, 
                                 height=button_size)
         
-        left_arrow = ImageOps.mirror(right_arrow)      
-        photo = ImageTk.PhotoImage(left_arrow.resize((button_size,button_size), 
-                                              Image.ANTIALIAS))
-        self.left_button = Button(nav_frame, image=photo, 
+
+        self.left_button = Button(nav_frame, image=left_photo, 
                        bg='black', command=self._previous_image)
-        self.left_button.image = photo
+        self.left_button.image = left_photo
         self.left_button.place(x=10, 
                                y=top_label_height, 
                                width=button_size, 

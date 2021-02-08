@@ -16,6 +16,10 @@ class MockMeta(object):
         self.has_exif = True
         self.orientation = orientation
 
+class MockImg(object):
+    def __init__(self, x=640, y=480):
+        self.size = [x, y]
+        
 class TestAnnotationTool(unittest.TestCase):
 
     def test_init(self):
@@ -148,48 +152,44 @@ class TestAnnotationTool(unittest.TestCase):
         complete = appMenu.file_to_annotation('test3.jpg', MockMeta(8))
         self.assertTrue(complete)
         self.assertEqual(tool.annotations[-1].rotation, Image.ROTATE_90)
- 
-    # def _import_file(self):
-    #     '''
-    #     This is the command that imports an image file into the project.
 
-    #     Returns
-    #     -------
-    #     None.
-
-    #     '''
-        
-    #     # Prompt for an image file(s) to be imported
-    #     file = askopenfilename(filetypes=(("Image File", 
-    #                                        self.root_app.file_ext),),
-    #                                             initialdir = "/",
-    #                                             title = "Select file")
-
-    #     # If no image was selected, then exit function
-    #     if not file:
-    #         return
-        
-    #     # If image is not already in project, then add it
-    #     elif file not in self.root_app.file_list:
-            
-    #         # Add this to the list of files in the project
-    #         self.root_app.file_list.append(file)
-            
-    #         # Create an Annotation object from the image
-    #         self.file_to_annotation(file)
-            
-    #         # If this is the first image being loaded, then add it to canvas
-    #         if not hasattr(self, 'img'):
-    #             self.root_app._load_image_from_file()  
-    
-    #         # Refresh GUI
-    #         self.root_app._draw_workspace()
-            
-    #         # The project needs to be saved
-    #         self.root_app.saved = False              
- 
     def test_import_file(self):
-        pass
+        
+        tool = AnnotationTool()
+        tool.load_app(True)
+        tool.annotations = []
+        tool.file_list = []
+        tool.current_file = 0
+        tool.class_list = []
+        tool.img = MockImg(640, 480)
+
+        appMenu = AppMenu(tool)
+        
+        self.assertTrue(tool.saved)
+        complete = appMenu._import_file('test.jpg', MockMeta(6))
+        self.assertTrue(complete)
+        self.assertEqual(len(tool.annotations), 1)
+        self.assertFalse(tool.saved)
+
+        tool.saved = True
+        self.assertTrue(tool.saved)
+        complete = appMenu._import_file('test2.jpg', MockMeta(6))
+        self.assertTrue(complete) 
+        self.assertEqual(len(tool.annotations), 2)
+        self.assertFalse(tool.saved)
+
+        tool.saved = True
+        self.assertTrue(tool.saved)
+        complete = appMenu._import_file('test.jpg', MockMeta(6))
+        self.assertTrue(complete) 
+        self.assertEqual(len(tool.annotations), 2)
+        self.assertTrue(tool.saved)
+        
+        complete = appMenu._import_file('', MockMeta(6))
+        self.assertFalse(complete) 
+        self.assertEqual(len(tool.annotations), 2)
+        self.assertTrue(tool.saved)
+
     
     def test_import_files_in_directory(self):
         pass

@@ -243,10 +243,17 @@ class AppMenu(object):
             pass
         return True
 
-    def _import_file(self):
+    def _import_file(self, file=None, meta=None):
         '''
         This is the command that imports an image file into the project.
 
+        Parameters
+        ----------
+        file : STRING
+            This is only used for testing purposes
+        meta : exif.Image object
+            This is only used for testing purposes
+        
         Returns
         -------
         None.
@@ -254,14 +261,15 @@ class AppMenu(object):
         '''
         
         # Prompt for an image file(s) to be imported
-        file = askopenfilename(filetypes=(("Image File", 
-                                           self.root_app.file_ext),),
-                                                initialdir = "/",
-                                                title = "Select file")
+        if self.root_app.window.winfo_ismapped():
+            file = askopenfilename(filetypes=(("Image File", 
+                                               self.root_app.file_ext),),
+                                                    initialdir = "/",
+                                                    title = "Select file")
 
         # If no image was selected, then exit function
         if not file:
-            return
+            return False
         
         # If image is not already in project, then add it
         elif file not in self.root_app.file_list:
@@ -270,10 +278,11 @@ class AppMenu(object):
             self.root_app.file_list.append(file)
             
             # Create an Annotation object from the image
-            self.file_to_annotation(file)
+            self.file_to_annotation(file, meta)
             
             # If this is the first image being loaded, then add it to canvas
-            if not hasattr(self, 'img'):
+            if not hasattr(self, 'img') and\
+                self.root_app.window.winfo_ismapped():
                 self.root_app._load_image_from_file()  
     
             # Refresh GUI
@@ -281,6 +290,8 @@ class AppMenu(object):
             
             # The project needs to be saved
             self.root_app.saved = False       
+
+        return True
                     
     def _import_files_in_directory(self, new_dir=None):
         '''

@@ -389,6 +389,7 @@ class AppMenu(object):
         # Refresh GUI (which should be empty)
         self.root_app._draw_workspace()
 
+        return True
 
     def _open(self):
         '''

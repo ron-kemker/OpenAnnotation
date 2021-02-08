@@ -9,7 +9,7 @@ from PIL import Image
 import unittest
 from AnnotationTool import AnnotationTool
 from menu import AppMenu
-from fileio import Annotation
+from fileio import Annotation, ROI
 
 class MockMeta(object):
     def __init__(self, orientation):
@@ -221,11 +221,48 @@ class TestMenu(unittest.TestCase):
         self.assertFalse(complete) 
         self.assertEqual(len(tool.annotations), 2)
         self.assertTrue(tool.saved)
-
         
     def test_new(self):
-        pass
+        
+        tool = AnnotationTool()
+        tool.load_app(True)   
+        
+        # Annotation added
+        tool.annotations = []
+        tool.file_list = []
+        tool.class_list = ['winston', 'prince', 'duckie']
+        tool.colorspace = ['#0000FF', '#FF0000', '#00FF00']
+        tool.current_file = 0
+        tool.class_count = [0 , 15 , 0]
+        tool.img = MockImg()
     
+        for i in range(5):
+            a = Annotation()
+            a.rotation = 3
+            tool.file_list.append('file%d.jpg' % i)
+            for p in range(3):
+                roi = ROI()
+                roi.push(0,0)
+                roi.push(100.0,100.0)
+                a.push(roi, 1)
+            tool.annotations.append(a)        
+        
+        tool._draw_workspace()  
+        
+        appMenu = AppMenu(tool)
+        complete = appMenu._new()
+        
+        self.assertTrue(complete)
+        self.assertEqual(tool.file_list, [])
+        self.assertTrue(tool.project_open)
+        self.assertEqual(tool.annotations, [])
+        self.assertEqual(tool.top_colors_free, tool.top_colors)
+        self.assertEqual(tool.top_colors_used, [])
+        self.assertEqual(tool.class_count, [])
+        self.assertEqual(tool.current_file, 0)
+        self.assertEqual(tool.class_list, [])
+        self.assertEqual(tool.colorspace, [])
+        
     def test_open(self):
         pass
     

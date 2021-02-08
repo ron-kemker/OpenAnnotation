@@ -19,6 +19,7 @@ from help import HelpMenu
 from project_wizard import ProjectWizard
 from fileio import Annotation, SaveOAF, LoadOAF
 
+
 class AppMenu(object):
    
     def __init__(self, root_app):
@@ -171,7 +172,7 @@ class AppMenu(object):
                               text="Cancel",
                               command=self.prompt.destroy)
         cancel_button.place(x=205, y=125, width=50, height=25)
-        
+        return True
 
     def select_image_action(self):
         '''
@@ -193,14 +194,16 @@ class AppMenu(object):
             self.root_app.current_file = entry_val
              
             # Refresh GUI
-            self.root_app._load_image_from_file() 
-            self.root_app._draw_workspace()
+            if self.root_app.window.winfo_ismapped():
+                self.root_app._load_image_from_file() 
+                self.root_app._draw_workspace()
             # Destroy Prompt
             self.prompt.destroy()
+            return True
         else:
-            print('Project Image Index Out of Bounds')
+            return False
 
-    def file_to_annotation(self, file):
+    def file_to_annotation(self, file, meta=None):
         '''
         Creates an Annotation object based on the image.
         
@@ -208,7 +211,8 @@ class AppMenu(object):
         ----------
         file : STRING
             Path and Filename of Image to be annotated.
-
+        meta : exif.Image object
+            Used for testing purposes only.
         Returns
         -------
         None.
@@ -219,19 +223,25 @@ class AppMenu(object):
         
         # EXIF data is not present in all images (e.g., png files).  If there
         # is EXIF data, use it to figure out how the image needs to be rotated.
-        try:   
-            meta = exif.Image(file)
+        try:
+            
+            if self.root_app.window.winfo_ismapped():
+                meta = exif.Image(file)
             if meta.has_exif:
                 if 'orientation' in dir(meta):
                    if meta.orientation == 6:
-                       self.root_app.annotations[-1].rotation = Image.ROTATE_270
+                       self.root_app.annotations[-1].rotation =\
+                           Image.ROTATE_270
                    elif meta.orientation == 3:
-                       self.root_app.annotations[-1].rotation = Image.ROTATE_180
+                       self.root_app.annotations[-1].rotation =\
+                           Image.ROTATE_180
                    elif meta.orientation == 8:
-                       self.root_app.annotations[-1].rotation = Image.ROTATE_90   
+                       self.root_app.annotations[-1].rotation =\
+                           Image.ROTATE_90   
         # This is the error when no EXIF data is found.
         except UnpackError:
             pass
+        return True
 
     def _import_file(self):
         '''

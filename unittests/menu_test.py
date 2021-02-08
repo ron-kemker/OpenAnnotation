@@ -5,10 +5,16 @@ Created on Mon Jan 25 20:41:37 2021
 @author: Ronald Kemker
 """
 
+from PIL import Image
 import unittest
 from AnnotationTool import AnnotationTool
 from menu import AppMenu
 from fileio import Annotation
+
+class MockMeta(object):
+    def __init__(self, orientation):
+        self.has_exif = True
+        self.orientation = orientation
 
 class TestAnnotationTool(unittest.TestCase):
 
@@ -91,8 +97,8 @@ class TestAnnotationTool(unittest.TestCase):
         tool.load_app(True)
         
         appMenu = AppMenu(tool)
-        appMenu.select_image()
-        
+        complete = appMenu.select_image()
+        self.assertTrue(complete)
         self.assertTrue(hasattr(appMenu, 'prompt'))
         self.assertTrue(hasattr(appMenu, 'prompt_entry'))
         
@@ -103,11 +109,49 @@ class TestAnnotationTool(unittest.TestCase):
         for i, child in enumerate(frame_child):
             self.assertEqual(frame_child[i].cget('text'), arr[i])
             
+    def test_select_image_action(self):
+        tool = AnnotationTool()
+        tool.load_app(True)
+        tool.annotations = [Annotation(), Annotation(), Annotation()]
+        
+        appMenu = AppMenu(tool)
+        appMenu.select_image()
+        appMenu.prompt_entry.insert(0, "1")
+        complete = appMenu.select_image_action()
+        self.assertTrue(complete)
+        
+        appMenu.select_image()
+        appMenu.prompt_entry.insert(0, "4")
+        complete = appMenu.select_image_action()
+        self.assertFalse(complete)
 
-    # def select_image_action(self):
+        appMenu.select_image()
+        appMenu.prompt_entry.insert(0, "-1")
+        complete = appMenu.select_image_action()
+        self.assertFalse(complete)
+        
+    def test_file_to_annotation(self):
+        tool = AnnotationTool()
+        tool.load_app(True)
+        tool.annotations = []
+        
+        appMenu = AppMenu(tool)
+        
+        complete = appMenu.file_to_annotation('test.jpg', MockMeta(6))
+        self.assertTrue(complete)
+        self.assertEqual(tool.annotations[-1].rotation, Image.ROTATE_270)
+        
+        complete = appMenu.file_to_annotation('test2.jpg', MockMeta(3))
+        self.assertTrue(complete)
+        self.assertEqual(tool.annotations[-1].rotation, Image.ROTATE_180)
+        
+        complete = appMenu.file_to_annotation('test3.jpg', MockMeta(8))
+        self.assertTrue(complete)
+        self.assertEqual(tool.annotations[-1].rotation, Image.ROTATE_90)
+ 
+    # def _import_file(self):
     #     '''
-    #     Retrieves a value from select_image Entry and sets the current_file to
-    #     that value
+    #     This is the command that imports an image file into the project.
 
     #     Returns
     #     -------
@@ -115,34 +159,35 @@ class TestAnnotationTool(unittest.TestCase):
 
     #     '''
         
-    #     # Pull the value from the entry box
-    #     entry_val = int(self.prompt_entry.get())-1
+    #     # Prompt for an image file(s) to be imported
+    #     file = askopenfilename(filetypes=(("Image File", 
+    #                                        self.root_app.file_ext),),
+    #                                             initialdir = "/",
+    #                                             title = "Select file")
+
+    #     # If no image was selected, then exit function
+    #     if not file:
+    #         return
         
-    #     # If a valid number is entered
-    #     if entry_val >= 0 and entry_val < len(self.root_app.annotations): 
-    #         # Set the current file
-    #         self.root_app.current_file = entry_val
-             
+    #     # If image is not already in project, then add it
+    #     elif file not in self.root_app.file_list:
+            
+    #         # Add this to the list of files in the project
+    #         self.root_app.file_list.append(file)
+            
+    #         # Create an Annotation object from the image
+    #         self.file_to_annotation(file)
+            
+    #         # If this is the first image being loaded, then add it to canvas
+    #         if not hasattr(self, 'img'):
+    #             self.root_app._load_image_from_file()  
+    
     #         # Refresh GUI
-    #         self.root_app._load_image_from_file() 
     #         self.root_app._draw_workspace()
-    #         # Destroy Prompt
-    #         self.prompt.destroy()
-    #     else:
-    #         print('Project Image Index Out of Bounds')
-
-
-    def test_select_image_action(self):
-        tool = AnnotationTool()
-        tool.load_app(True)
-        
-        appMenu = AppMenu(tool)
-        appMenu.select_image()
-        appMenu.select_image_action()
-    
-    def test_file_to_annotation(self):
-        pass
-    
+            
+    #         # The project needs to be saved
+    #         self.root_app.saved = False              
+ 
     def test_import_file(self):
         pass
     

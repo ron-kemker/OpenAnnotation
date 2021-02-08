@@ -20,7 +20,7 @@ class MockImg(object):
     def __init__(self, x=640, y=480):
         self.size = [x, y]
         
-class TestAnnotationTool(unittest.TestCase):
+class TestMenu(unittest.TestCase):
 
     def test_init(self):
         tool = AnnotationTool()

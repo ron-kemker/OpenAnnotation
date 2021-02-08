@@ -106,7 +106,8 @@ class AppMenu(object):
                 
                 toolMenu.add_command(label='Select Image #',
                                      command=self.select_image)
-                
+        else:
+            toolMenu = False
                 
                 
         # This is the Help Menu        
@@ -118,6 +119,11 @@ class AppMenu(object):
         # Create a popup with basic information about the program
         helpMenu.add_command(label="About OpenAnnotation", 
                              command=self.draw_about_box)
+        
+        if not self.root_app.window.winfo_ismapped():
+            return menu, fileMenu, toolMenu, helpMenu
+        
+        
 
     def select_image(self):
         '''

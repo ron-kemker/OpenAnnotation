@@ -293,9 +293,16 @@ class AppMenu(object):
 
         return True
                     
-    def _import_files_in_directory(self, new_dir=None):
+    def _import_files_in_directory(self, new_dir=None, meta=None):
         '''
         This imports an entire directory of images into the project.        
+
+        Parameters
+        ----------
+        new_dir : STRING
+            This is only used for testing purposes
+        meta : exif.Image object
+            This is only used for testing purposes
 
         Returns
         -------
@@ -304,12 +311,12 @@ class AppMenu(object):
         '''
         
         # Prompt for a directory to search for imagery
-        if not new_dir:
+        if not new_dir and self.root_app.window.winfo_ismapped():
             new_dir = askdirectory()
         
         # If no directory selected, exit function
         if not new_dir:
-            return
+            return False
         
         # Iterate throug all of the possible file extensions and them to a 
         # list
@@ -326,7 +333,7 @@ class AppMenu(object):
         self.root_app.file_list += tmp_file_list
         
         # If this is the first image being loaded, then add it to canvas
-        if not hasattr(self, 'img'):
+        if not hasattr(self, 'img') and self.root_app.window.winfo_ismapped():
             self.root_app._load_image_from_file()  
             
         # Refresh GUI
@@ -334,6 +341,9 @@ class AppMenu(object):
         
         # The project needs to be saved
         self.root_app.saved = False    
+        
+        return True
+        
     
     def _new(self):
         '''

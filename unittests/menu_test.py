@@ -264,11 +264,59 @@ class TestMenu(unittest.TestCase):
         self.assertEqual(tool.colorspace, [])
         
     def test_open(self):
-        pass
+        tool = AnnotationTool()
+        tool.load_app(True) 
+        
+        # Annotation added
+        tool.annotations = []
+        tool.file_list = []
+        tool.class_list = ['winston', 'prince', 'duckie']
+        tool.colorspace = ['#0000FF', '#FF0000', '#00FF00']
+        tool.current_file = 0
+        tool.img = MockImg()
     
+        for i in range(5):
+            a = Annotation()
+            a.rotation = 3
+            tool.file_list.append('file%d.jpg' % i)
+            for p in range(3):
+                roi = ROI()
+                roi.push(0,0)
+                roi.push(100.0,100.0)
+                a.push(roi, i%len(tool.class_list))
+            tool.annotations.append(a)           
+
+        appMenu = AppMenu(tool)
+        complete = appMenu._open('file.oaf')
+        self.assertTrue(complete)
+        self.assertEqual(tool.class_count, [6, 6, 3])
+        self.assertTrue(tool.project_open)
+        self.assertTrue(tool.saved)
+        self.assertEqual(tool.top_colors_used, tool.colorspace)
+        self.assertEqual(tool.top_colors_free, tool.top_colors[3:])
+
+        appMenu = AppMenu(tool)
+        complete = appMenu._open('')
+        self.assertFalse(complete)
+
     def test_save(self):
-        pass
-    
+        tool = AnnotationTool()
+        tool.load_app(True) 
+        
+  
+        tool.saved = False
+        appMenu = AppMenu(tool)
+        complete = appMenu._save('file.oaf')
+        self.assertTrue(complete)
+        self.assertTrue(tool.saved)
+       
+        tool.saved = False
+        appMenu = AppMenu(tool)
+        complete = appMenu._save('')
+        self.assertFalse(complete)   
+        self.assertFalse(tool.saved)
+        
+        
     def test_close(self):
         pass
     

@@ -391,9 +391,14 @@ class AppMenu(object):
 
         return True
 
-    def _open(self):
+    def _open(self, filename=None):
         '''
         Open a saved project into the application.
+
+        Parameters
+        ----------
+        filename : STRING
+            This is only used for testing purposes
 
         Returns
         -------
@@ -402,19 +407,21 @@ class AppMenu(object):
         '''
         
         # Prompt for what project should be opened
-        filename = askopenfilename(filetypes=(("OAF files","*.oaf"),),
-                                                initialdir = "/",
-                                                title = "Select file")
+        if self.root_app.window.winfo_ismapped():
+            filename = askopenfilename(filetypes=(("OAF files","*.oaf"),),
+                                                    initialdir = "/",
+                                                    title = "Select file")
         
         # If no project is selected, there is no project to open
         if not filename:
-            return
+            return False
         
         # Load the project and update the project variables with where it was
         # last saved
-        self.root_app.annotations,self.root_app.file_list,\
-           self.root_app.class_list,self.root_app.colorspace,\
-               self.root_app.current_file = LoadOAF(filename)        
+        if self.root_app.window.winfo_ismapped():
+            self.root_app.annotations,self.root_app.file_list,\
+               self.root_app.class_list,self.root_app.colorspace,\
+                   self.root_app.current_file = LoadOAF(filename)        
         
         # Track free/used top colors
         self.root_app.top_colors_used = []
@@ -443,16 +450,24 @@ class AppMenu(object):
         self.root_app.project_open = True
 
         # Load the image from the last save point
-        self.root_app._load_image_from_file()  
+        if self.root_app.window.winfo_ismapped():
+            self.root_app._load_image_from_file()  
         
         # Refresh the GUI
         self.root_app._draw_workspace()
         
-    def _save(self):
+        return True
+        
+    def _save(self, filename=None):
         '''
         Command that saves the project.  Currently puts all of the relevant
         information into an OAF file.
-
+        
+        Parameters
+        ----------
+        filename : STRING
+            This is only used for testing purposes
+        
         Returns
         -------
         None.
@@ -460,37 +475,27 @@ class AppMenu(object):
         '''
  
         # Prompt where the files will be saved to
-        filename = asksaveasfilename(filetypes=(("OAF files","*.oaf"),),
-                                                initialdir = "/",
-                                                title = "Select file")    
+        if self.root_app.window.winfo_ismapped():
+            filename = asksaveasfilename(filetypes=(("OAF files","*.oaf"),),
+                                                    initialdir = "/",
+                                                    title = "Select file")    
 
         # If no filename is specified, then exit the save command
         if not filename:
-            return
+            return False
     
         # Save as filename.oaf
-        SaveOAF(filename, 
-                self.root_app.annotations, 
-                self.root_app.file_list, 
-                self.root_app.class_list, 
-                self.root_app.colorspace, 
-                self.root_app.current_file)
-    
-        # # Dictionary that will be pickled
-        # save_dict = {'annotations': self.root_app.annotations,
-        #              'file_list': self.root_app.file_list,
-        #              'class_list': self.root_app.class_list,
-        #              'current_file':self.root_app.current_file,
-        #              'colorspace': self.root_app.colorspace,
-        #              'class_count' : self.root_app.class_count,                     
-        #              }
-        
-        # # Save the .pkl file
-        # with open(file_name, "wb") as f:
-        #     pickle.dump(save_dict, f)
+        if self.root_app.window.winfo_ismapped():
+            SaveOAF(filename, 
+                    self.root_app.annotations, 
+                    self.root_app.file_list, 
+                    self.root_app.class_list, 
+                    self.root_app.colorspace, 
+                    self.root_app.current_file)
             
         # The file has now been saved
         self.root_app.saved = True
+        return True
 
     def _close(self):
         '''

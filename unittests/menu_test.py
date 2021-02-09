@@ -349,8 +349,22 @@ class TestMenu(unittest.TestCase):
         self.assertFalse(complete)
         
     def test_close_command(self):
-        pass
-    
+        tool = AnnotationTool()
+        tool.load_app(True) 
+        
+  
+        tool.saved = False
+        appMenu = AppMenu(tool)
+        complete = appMenu._close_command()
+        self.assertTrue(complete)
+
+        frame = tool.background.winfo_children()
+        
+        arr = ["New Blank Project", "New Project Wizard", "Load Project", 
+               "Quit"]
+        for i, child in enumerate(frame):
+            self.assertEqual(frame[i].cget('text'), arr[i])
+        
     def test_quit(self):
         pass
     

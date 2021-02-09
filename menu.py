@@ -543,18 +543,29 @@ class AppMenu(object):
 
         return True
 
-    def _save_close_command(self):
+    def _save_close_command(self, filename = None):
         '''
         Save and then close the project.
-
+        
+        Parameters
+        ----------
+        filename : STRING
+            This is only used for testing purposes
+            
         Returns
         -------
         None.
 
         '''
         
-        self._save()
-        self._close_command()
+        complete1 = self._save(filename)
+        complete2 = self._close_command()
+        
+        if complete1 and complete2:
+            return True
+        else:
+            return False
+        
         
     def _close_command(self):  
         '''
@@ -611,7 +622,9 @@ class AppMenu(object):
                                            height=3, 
                                            command=self._quit)
         self.root_app.quit_button.grid(row=3, column=0, sticky='n', pady=2)
-
+        
+        return True
+        
     def _quit(self):
         '''
         Quit the application.

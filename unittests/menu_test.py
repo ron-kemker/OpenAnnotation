@@ -334,10 +334,20 @@ class TestMenu(unittest.TestCase):
         for i in range(4):
             widget = pop.winfo_children()[0].winfo_children()[i]
             self.assertEqual(arr[i], widget.cget('text'))
-       
+                    
     def test_save_close_command(self):
-        pass
-    
+        tool = AnnotationTool()
+        tool.load_app(True) 
+        
+  
+        tool.saved = False
+        appMenu = AppMenu(tool)
+        complete = appMenu._save_close_command('file.oaf')
+        self.assertTrue(complete)
+
+        complete = appMenu._save_close_command('')
+        self.assertFalse(complete)
+        
     def test_close_command(self):
         pass
     

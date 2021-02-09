@@ -316,10 +316,25 @@ class TestMenu(unittest.TestCase):
         self.assertFalse(complete)   
         self.assertFalse(tool.saved)
         
-        
     def test_close(self):
-        pass
-    
+        tool = AnnotationTool()
+        tool.load_app(True) 
+        tool.saved = False
+        tool.project_open = True
+  
+        appMenu = AppMenu(tool)
+        complete = appMenu._close()
+        
+        pop = appMenu.popup_window
+        self.assertTrue(complete)
+        self.assertFalse(tool.project_open)
+        self.assertTrue(pop.winfo_exists())
+        
+        arr = ["Close without saving?", "Save", "Close", "Cancel"]
+        for i in range(4):
+            widget = pop.winfo_children()[0].winfo_children()[i]
+            self.assertEqual(arr[i], widget.cget('text'))
+       
     def test_save_close_command(self):
         pass
     

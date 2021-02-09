@@ -515,7 +515,6 @@ class AppMenu(object):
             self.popup_window.geometry("300x100") 
             self.popup_window.wm_title("Save Work?")
             
-            
             # Background to draw on
             bkgd_frame = Frame(self.popup_window, width=300, height=100)
             bkgd_frame.pack()
@@ -542,6 +541,7 @@ class AppMenu(object):
         # Get rid of the extra menu options that pertain to projects
         self.root_app.project_open = False
 
+        return True
 
     def _save_close_command(self):
         '''
@@ -584,10 +584,11 @@ class AppMenu(object):
         self.root_app.background.pack()
                 
         # Create Load Screen Buttons
-        self.root_app.new_button = Button(self.root_app.background, text="New Blank Project", 
-                            width = 20,
-                            height=3, 
-                            command=self._new)
+        self.root_app.new_button = Button(self.root_app.background, 
+                                            text="New Blank Project", 
+                                            width = 20,
+                                            height=3, 
+                                            command=self._new)
         self.root_app.new_button.grid(row=0, column=0, sticky='n', pady=2 )
 
         self.root_app.new_wiz_button = Button(self.root_app.background, 
@@ -595,18 +596,20 @@ class AppMenu(object):
                                      width = 20,
                                      height=3, 
                                      command=self._new_project_wizard)
-        self.root_app.new_wiz_button.grid(row=1, column=0, sticky='n', pady=2 )
+        self.root_app.new_wiz_button.grid(row=1, column=0, sticky='n', pady=2)
 
-        self.root_app.load_button = Button(self.root_app.background, text="Load Project", 
-                            width=20,
-                            height=3, 
-                            command=self._open)
+        self.root_app.load_button = Button(self.root_app.background, 
+                                           text="Load Project", 
+                                           width=20,
+                                           height=3, 
+                                           command=self._open)
         self.root_app.load_button.grid(row=2, column=0, sticky='n', pady=2)
 
-        self.root_app.quit_button = Button(self.root_app.background, text="Quit", 
-                            width=20, 
-                            height=3, 
-                            command=self._quit)
+        self.root_app.quit_button = Button(self.root_app.background, 
+                                           text="Quit", 
+                                           width=20, 
+                                           height=3, 
+                                           command=self._quit)
         self.root_app.quit_button.grid(row=3, column=0, sticky='n', pady=2)
 
     def _quit(self):

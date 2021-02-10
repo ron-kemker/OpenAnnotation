@@ -672,45 +672,56 @@ class AppMenu(object):
 
         return True
 
-    def _csv_exporter(self):
+    def _csv_exporter(self, filename=None):
         '''
         Creates a CSV of the entire project.  Format is:
         
-            filename, label, x0, y0, x1, y1, rotation
+            filename, label, rotation, x0, y0, x1, y1, ... , xN, yN
+
+        Parameters
+        ----------
+        filename : STRING
+            This is only used for testing purposes
 
         Returns
         -------
         None.
 
         '''
+        
+        if self.root_app.window.winfo_ismapped():
     
-        # Prompt where the csv file should be saved
-        file_name = asksaveasfilename(filetypes=(("CSV files","*.csv"),),
-                                                initialdir = "/",
-                                                title = "Select file")
+            # Prompt where the csv file should be saved
+            filename = asksaveasfilename(filetypes=(("CSV files","*.csv"),),
+                                                    initialdir = "/",
+                                                    title = "Select file")
         
         # If no filename was given, don't export the project to CSV
-        if not file_name:  
-            return
+        if not filename:  
+            return False
         
         # Add .csv to the end of the filename when saving
-        else:
-            file_name = file_name + '.csv'
+        elif filename[-4:] != '.csv':
+            filename = filename + '.csv'
         
         # Save every box as a new line to the csv file
-        with open(file_name, mode='w', newline='') as file:
+        with open(filename, mode='w', newline='') as file:
             writer = csv.writer(file, delimiter=',')            
-            header = ['filename','label','left','top','right','bottom',
-                      'rotation']
-            writer.writerow(header)
-        
-        
+            
             for i, image in enumerate(self.root_app.annotations):
-                for b, box in enumerate(image.bbox):
+                
+                for b, roi in enumerate(image.roi):
                     
-                    row = [image.filename,image.label[b], box[1], box[0],
-                           box[3],box[2],image.rotation]
+                    row = [self.root_app.file_list[i],
+                           self.root_app.class_list[image.label[b]], 
+                           image.rotation]
+                    
+                    for point in roi.points:
+                        row += [point[0], point[1]]
+                    
                     writer.writerow(row)
+        
+        return True
 
     def draw_about_box(self):
         '''

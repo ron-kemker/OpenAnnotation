@@ -383,8 +383,40 @@ class TestMenu(unittest.TestCase):
         self.assertTrue(complete)  
         
     def test_csv_exporter(self):
-        pass
+        tool = AnnotationTool()
+        tool.load_app(True) 
+
+        # Annotation added
+        tool.annotations = []
+        tool.file_list = []
+        tool.class_list = ['winston', 'prince', 'duckie']
+        tool.colorspace = ['#0000FF', '#FF0000', '#00FF00']
+        tool.current_file = 0
+        tool.img = MockImg()
     
+        for i in range(5):
+            a = Annotation()
+            a.rotation = 3
+            tool.file_list.append('file%d.jpg' % i)
+            for p in range(3):
+                roi = ROI()
+                roi.push(0,0)
+                roi.push(100.0,100.0)
+                a.push(roi, i%len(tool.class_list))
+            tool.annotations.append(a)        
+
+        appMenu = AppMenu(tool)
+        complete = appMenu._csv_exporter('test')
+        self.assertTrue(complete)  
+        
+        appMenu = AppMenu(tool)
+        complete = appMenu._csv_exporter('test.csv')
+        self.assertTrue(complete)  
+
+        appMenu = AppMenu(tool)
+        complete = appMenu._csv_exporter('')
+        self.assertFalse(complete)  
+        
     def test_draw_about_box(self):
         pass
     

@@ -735,29 +735,35 @@ class AppMenu(object):
         '''
         
         # Open a popup window
-        self.about_window = tk.Toplevel()
-        self.about_window.title("About Open Annotation")  # to define the title
-        self.about_window.geometry("400x200")
+        about_window = tk.Toplevel()
+        about_window.title("About Open Annotation")  # to define the title
+        about_window.geometry("400x200")
         
         # Draw the canvas for the text
-        canvas = Canvas(self.about_window, 
+        canvas = Canvas(about_window, 
                         bg='white',
                         width=400, 
                         height=200)
         
         # Read a file that contains the information for the about window
-        f = open('data/about.txt', 'r')
-        lines = f.readlines()
-        f.close()
+        if self.root_app.window.winfo_ismapped():
+
+            f = open('data/about.txt', 'r')
+            lines = f.readlines()
+            f.close()
+        else:
+            lines = []
         
         # Draw that information onto the popup window
         for i, line in enumerate(lines):
             canvas.create_text(200, (i+1)*11 , 
                                font=('Arial', 10),
                                text=line)
-        canvas.pack()            
+        canvas.pack()
+        return True           
 
     def _new_project_wizard(self):
         self._new()
         ProjectWizard(self)
+        return True
               

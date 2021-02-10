@@ -418,11 +418,20 @@ class TestMenu(unittest.TestCase):
         self.assertFalse(complete)  
         
     def test_draw_about_box(self):
-        pass
-    
+        tool = AnnotationTool()
+        tool.load_app(True) 
+   
+        appMenu = AppMenu(tool)
+        complete = appMenu.draw_about_box()
+        self.assertTrue(complete)     
+        
     def test_new_project_wizard(self):
-        pass
-    
+        tool = AnnotationTool()
+        tool.load_app(True) 
+   
+        appMenu = AppMenu(tool)
+        complete = appMenu._new_project_wizard()
+        self.assertTrue(complete)         
     
 if __name__ == '__main__':
     unittest.main()

@@ -662,11 +662,15 @@ class AppMenu(object):
             cancel_button = Button(bkgd_frame, text="Cancel", 
                                    command=popup_window.destroy)
             cancel_button.grid(row=1, column=2)            
-        
+            
+            if not self.root_app.window.winfo_ismapped():
+                return popup_window
+
         # The project is already saved, so just quit the entire app
         else:
             self.root_app.window.destroy()
 
+        return True
 
     def _csv_exporter(self):
         '''

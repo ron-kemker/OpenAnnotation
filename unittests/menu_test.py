@@ -352,8 +352,6 @@ class TestMenu(unittest.TestCase):
         tool = AnnotationTool()
         tool.load_app(True) 
         
-  
-        tool.saved = False
         appMenu = AppMenu(tool)
         complete = appMenu._close_command()
         self.assertTrue(complete)
@@ -366,8 +364,24 @@ class TestMenu(unittest.TestCase):
             self.assertEqual(frame[i].cget('text'), arr[i])
         
     def test_quit(self):
-        pass
-    
+        tool = AnnotationTool()
+        tool.load_app(True) 
+  
+        tool.saved = False
+        appMenu = AppMenu(tool)
+        popup = appMenu._quit()
+
+        children = popup.winfo_children()[0].winfo_children()
+        
+        arr = ["Quit without saving?", "Save", "Quit", "Cancel"]
+        for i, child in enumerate(children):
+            self.assertEqual(child.cget('text'), arr[i])
+
+        tool.saved = True
+        appMenu = AppMenu(tool)
+        complete = appMenu._quit()
+        self.assertTrue(complete)  
+        
     def test_csv_exporter(self):
         pass
     

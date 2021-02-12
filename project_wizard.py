@@ -40,6 +40,7 @@ class ProjectWizard(object):
         
         # Popup for the New Project Wizard
         self.wizard_window = tk.Toplevel()
+        self.wizard_window.grab_set()
         self.wizard_window.wm_title("Project Wizard")
         self.wizard_window.geometry("%dx%d" % (self.window_width,
                                                self.window_height))

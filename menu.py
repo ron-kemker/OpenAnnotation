@@ -18,7 +18,7 @@ from tkinter.filedialog import askopenfilename, asksaveasfilename, \
 from help import HelpMenu
 from project_wizard import ProjectWizard
 from fileio import Annotation, SaveOAF, LoadOAF
-from optionmenu import OptionPrompt
+from options import OptionPrompt
 
 
 class AppMenu(object):

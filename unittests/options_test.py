@@ -7,7 +7,7 @@ Created on Fri Feb 12 13:10:26 2021
 
 import unittest
 from AnnotationTool import AnnotationTool
-from optionmenu import OptionPrompt
+from options import OptionPrompt
 
 class TestOptionPrompt(unittest.TestCase):
     

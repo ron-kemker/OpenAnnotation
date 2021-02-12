@@ -32,6 +32,8 @@ class AnnotationTool(object):
 
         '''
         self.file_ext = ['.jpg', '.png']
+        self.window_size_strings = ["1024x768", "800x600"]
+        self.window_size_index = 0
         self.window_width = 1024
         self.window_height = 768
         self.toolbar_width = 150
@@ -43,7 +45,6 @@ class AnnotationTool(object):
         self.app_menu = AppMenu(self)
         self.top_colors = ['#0000FF', '#FF0000', '#00FF00', '#00FFFF', 
                            '#FF00FF', '#FFFF00'] 
-
 
     def load_app(self, test=False):
         

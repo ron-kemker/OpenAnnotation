@@ -18,6 +18,7 @@ from tkinter.filedialog import askopenfilename, asksaveasfilename, \
 from help import HelpMenu
 from project_wizard import ProjectWizard
 from fileio import Annotation, SaveOAF, LoadOAF
+from optionmenu import OptionPrompt
 
 
 class AppMenu(object):
@@ -99,7 +100,7 @@ class AppMenu(object):
                             command=self.root_app._draw_object_class_manager)
             
             toolMenu.add_command(label='Options',
-                                 command=None)
+                                 command=OptionPrompt(self.root_app).draw_window)
             
             if len(self.root_app.annotations):
                 toolMenu.add_command(label="Reset Image", 
@@ -124,8 +125,7 @@ class AppMenu(object):
         if not self.root_app.window.winfo_ismapped():
             return menu, fileMenu, toolMenu, helpMenu
         
-        
-
+      
     def select_image(self):
         '''
         Displays a prompt to select which image in the project to skip ahead 

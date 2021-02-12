@@ -19,11 +19,10 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ron-kemker/OpenAnnotation",
-    packages=setuptools.find_packages(),
+    packages=['tkinter', 'PIL'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    # python_requires='>=3.6',
 )

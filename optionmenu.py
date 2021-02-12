@@ -30,8 +30,8 @@ class OptionPrompt(object):
         self.root_app = root_app
 
         # Static Window Dimensions
-        self.window_width = 800
-        self.window_height = 600
+        self.window_width = 600
+        self.window_height = 400
         
     def draw_window(self):
         '''
@@ -93,7 +93,9 @@ class OptionPrompt(object):
                         command=self.option_window.destroy)
         button.place(x=self.window_width/2 + 10, y= self.window_height - 50, 
                      width = 100, height=25)
-
+        
+        return True
+        
     def ok_button(self):
         '''
         Popup for a New Project Wizard GUI.
@@ -125,4 +127,4 @@ class OptionPrompt(object):
         # Redraw the Window
         self.root_app._draw_workspace()
         
-    
+        return True

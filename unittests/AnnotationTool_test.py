@@ -29,6 +29,9 @@ class TestAnnotationTool(unittest.TestCase):
         self.assertListEqual(tool.file_ext, ['.jpg', '.png'])
         self.assertListEqual(tool.top_colors, ['#0000FF', '#FF0000','#00FF00',
                                                '#00FFFF','#FF00FF', '#FFFF00'])
+        self.assertListEqual(tool.window_size_strings , 
+                             ["1024x768", "800x600"])
+        
         
         # Initial Boolean Objects
         self.assertTrue(tool.saved)
@@ -41,6 +44,7 @@ class TestAnnotationTool(unittest.TestCase):
         self.assertEqual(tool.footer_height, 25)
         self.assertEqual(tool.canvas_width, 874)
         self.assertEqual(tool.canvas_height, 743)
+        self.assertEqual(tool.window_size_index , 0)
 
         # Make sure Appmenu has correct "root_app"
         self.assertEqual(tool, tool.app_menu.root_app)

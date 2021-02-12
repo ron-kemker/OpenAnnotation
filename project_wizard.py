@@ -68,7 +68,7 @@ class ProjectWizard(object):
 
         # Add an individual file to the project
         self.add_file_button = Button(self.left_pane,
-                                      text ='Import File to Project',
+                                      text ='Import File(s) to Project',
                                       command = self._import_file,
                                       width=200,
                                       height=50)
@@ -77,7 +77,7 @@ class ProjectWizard(object):
 
         # Add all files in a directory to the project
         self.add_dir_button = Button(self.left_pane,
-                            text ='Import Files in Directory to Project',
+                            text ='Import Entire Directory to Project',
                             command = self._import_files_in_directory,
                             width=200,
                             height=50)

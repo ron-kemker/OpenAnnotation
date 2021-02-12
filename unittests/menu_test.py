@@ -7,6 +7,7 @@ Created on Mon Jan 25 20:41:37 2021
 
 from PIL import Image
 import unittest
+
 from AnnotationTool import AnnotationTool
 from menu import AppMenu
 from fileio import Annotation, ROI
@@ -70,8 +71,9 @@ class TestMenu(unittest.TestCase):
         self.assertEqual(fileMenu.entrycget(3, 'label'), 'Open Project')
         self.assertEqual(fileMenu.entrycget(4, 'label'), 'Save Project')
         self.assertEqual(fileMenu.entrycget(5, 'label'), 'Close Project')
-        self.assertEqual(fileMenu.entrycget(7, 'label'), "Import File")
-        self.assertEqual(fileMenu.entrycget(8, 'label'), "Import Directory")
+        self.assertEqual(fileMenu.entrycget(7, 'label'), "Import File(s)")
+        self.assertEqual(fileMenu.entrycget(8, 'label'), 
+                         "Import Entire Directory")
         self.assertEqual(fileMenu.entrycget(9, 'label'), 
                          "Export Project to CSV")        
         self.assertEqual(fileMenu.entrycget(11, 'label'), 'Quit')
@@ -166,21 +168,21 @@ class TestMenu(unittest.TestCase):
         appMenu = AppMenu(tool)
         
         self.assertTrue(tool.saved)
-        complete = appMenu._import_file('test.jpg', MockMeta(6))
+        complete = appMenu._import_file(('test.jpg', ), MockMeta(6))
         self.assertTrue(complete)
         self.assertEqual(len(tool.annotations), 1)
         self.assertFalse(tool.saved)
 
         tool.saved = True
         self.assertTrue(tool.saved)
-        complete = appMenu._import_file('test2.jpg', MockMeta(6))
+        complete = appMenu._import_file(('test2.jpg', ), MockMeta(6))
         self.assertTrue(complete) 
         self.assertEqual(len(tool.annotations), 2)
         self.assertFalse(tool.saved)
 
         tool.saved = True
         self.assertTrue(tool.saved)
-        complete = appMenu._import_file('test.jpg', MockMeta(6))
+        complete = appMenu._import_file(('test.jpg', ), MockMeta(6))
         self.assertTrue(complete) 
         self.assertEqual(len(tool.annotations), 2)
         self.assertTrue(tool.saved)

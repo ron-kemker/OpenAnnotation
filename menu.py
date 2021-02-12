@@ -13,7 +13,7 @@ from plum._exceptions import UnpackError
 import tkinter as tk
 from tkinter import Frame, Label, Menu, Button, Canvas, Entry
 from tkinter.filedialog import askopenfilename, asksaveasfilename, \
-    askdirectory
+    askdirectory, askopenfilenames
 
 from help import HelpMenu
 from project_wizard import ProjectWizard
@@ -73,9 +73,9 @@ class AppMenu(object):
         # If a project is open, allow files and entire directories to be added
         fileMenu.add_separator()
         if self.root_app.project_open:
-            fileMenu.add_command(label="Import File", 
+            fileMenu.add_command(label="Import File(s)", 
                                  command=self._import_file)
-            fileMenu.add_command(label="Import Directory", 
+            fileMenu.add_command(label="Import Entire Directory", 
                                  command=self._import_files_in_directory) 
             
             # Export the project to a CSV file
@@ -243,7 +243,7 @@ class AppMenu(object):
             pass
         return True
 
-    def _import_file(self, file=None, meta=None):
+    def _import_file(self, files=None, meta=None):
         '''
         This is the command that imports an image file into the project.
 
@@ -262,34 +262,35 @@ class AppMenu(object):
         
         # Prompt for an image file(s) to be imported
         if self.root_app.window.winfo_ismapped():
-            file = askopenfilename(filetypes=(("Image File", 
+            files = askopenfilenames(filetypes=(("Image File", 
                                                self.root_app.file_ext),),
                                                     initialdir = "/",
                                                     title = "Select file")
 
         # If no image was selected, then exit function
-        if not file:
+        if not files:
             return False
+
+        for file in files:
+            # If image is not already in project, then add it
+            if file not in self.root_app.file_list:
+                
+                # Add this to the list of files in the project
+                self.root_app.file_list.append(file)
+                
+                # Create an Annotation object from the image
+                self.file_to_annotation(file, meta)
+                
+                # If this is the first image being loaded, then add it to canvas
+                if not hasattr(self, 'img') and\
+                    self.root_app.window.winfo_ismapped():
+                    self.root_app._load_image_from_file()  
         
-        # If image is not already in project, then add it
-        elif file not in self.root_app.file_list:
-            
-            # Add this to the list of files in the project
-            self.root_app.file_list.append(file)
-            
-            # Create an Annotation object from the image
-            self.file_to_annotation(file, meta)
-            
-            # If this is the first image being loaded, then add it to canvas
-            if not hasattr(self, 'img') and\
-                self.root_app.window.winfo_ismapped():
-                self.root_app._load_image_from_file()  
-    
-            # Refresh GUI
-            self.root_app._draw_workspace()
-            
-            # The project needs to be saved
-            self.root_app.saved = False       
+                # Refresh GUI
+                self.root_app._draw_workspace()
+                
+                # The project needs to be saved
+                self.root_app.saved = False       
 
         return True
                     

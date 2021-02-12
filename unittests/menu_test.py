@@ -154,6 +154,10 @@ class TestMenu(unittest.TestCase):
         complete = appMenu.file_to_annotation('test3.jpg', MockMeta(8))
         self.assertTrue(complete)
         self.assertEqual(tool.annotations[-1].rotation, Image.ROTATE_90)
+        
+        complete = appMenu.file_to_annotation('test1.png', MockMeta(8))
+        self.assertTrue(complete)
+        self.assertEqual(tool.annotations[-1].rotation, Image.ROTATE_90)
 
     def test_import_file(self):
         
@@ -186,18 +190,26 @@ class TestMenu(unittest.TestCase):
         self.assertTrue(complete) 
         self.assertEqual(len(tool.annotations), 2)
         self.assertTrue(tool.saved)
-        
+
+        tool.saved = True
+        self.assertTrue(tool.saved)
+        complete = appMenu._import_file(('test.png', ), MockMeta(6))
+        self.assertTrue(complete) 
+        self.assertEqual(len(tool.annotations), 3)
+        self.assertFalse(tool.saved)
+
+        tool.saved = True        
         complete = appMenu._import_file('', MockMeta(6))
         self.assertFalse(complete) 
-        self.assertEqual(len(tool.annotations), 2)
+        self.assertEqual(len(tool.annotations), 3)
         self.assertTrue(tool.saved)
 
     
     def test_import_files_in_directory(self):
         tool = AnnotationTool()
         tool.load_app(True)
-        tool.annotations = [Annotation(), Annotation()]
-        tool.file_list = ['file1.jpg', 'file2.jpg']
+        tool.annotations = [Annotation(), Annotation(), Annotation()]
+        tool.file_list = ['file1.jpg', 'file2.jpg', 'file3.png']
         tool.current_file = 0
         tool.class_list = []
         tool.img = MockImg(640, 480)
@@ -207,21 +219,21 @@ class TestMenu(unittest.TestCase):
         self.assertTrue(tool.saved)
         complete = appMenu._import_files_in_directory('path/',MockMeta(6))
         self.assertTrue(complete)
-        self.assertEqual(len(tool.annotations), 2)
+        self.assertEqual(len(tool.annotations), 3)
         self.assertFalse(tool.saved)
 
         tool.saved = True
         self.assertTrue(tool.saved)
         complete = appMenu._import_files_in_directory('path/', MockMeta(6))
         self.assertTrue(complete) 
-        self.assertEqual(len(tool.annotations), 2)
+        self.assertEqual(len(tool.annotations), 3)
         self.assertFalse(tool.saved)
 
         tool.saved = True
         self.assertTrue(tool.saved)        
         complete = appMenu._import_files_in_directory('', MockMeta(6))
         self.assertFalse(complete) 
-        self.assertEqual(len(tool.annotations), 2)
+        self.assertEqual(len(tool.annotations), 3)
         self.assertTrue(tool.saved)
         
     def test_new(self):

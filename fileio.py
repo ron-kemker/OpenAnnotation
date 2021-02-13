@@ -8,17 +8,23 @@ Created on Mon Feb  1 13:25:14 2021
 import struct
 
 def int_to_bytearray(x):
-    return x.to_bytes(2, 'big')
-
-def bytearray_to_float(x):
-    return float(struct.unpack("f", x)[0])
+    return x.to_bytes((x.bit_length() + 7) // 8, 'big')
 
 def bytearray_to_int(x):
     return int.from_bytes(x, 'big')
 
+def bytearray_to_float(x):
+    return float(struct.unpack("f", x)[0])
+
+def float_to_bytearray(x):
+    return struct.pack('f', x)
+
 def string_to_bytearray(x):
     return str.encode(x)
-  
+
+def bytearray_to_string(x):
+    return x.decode()    
+
 class ROI(object):
     
     def __init__(self):
@@ -125,8 +131,8 @@ class ROI(object):
         hex_list = [self.size().to_bytes(2, 'big'), newline_byte]
         
         for point in self.points:
-            hex_list += [struct.pack('f', point[0]), newline_byte]
-            hex_list += [struct.pack('f', point[1]), newline_byte]
+            hex_list += [float_to_bytearray(point[0]), newline_byte]
+            hex_list += [float_to_bytearray(point[1]), newline_byte]
         
         return hex_list
 
@@ -164,7 +170,7 @@ class Annotation(object):
         self.roi.append(roi)
         self.label.append(label)
         
-    def pop(self, index):
+    def pop(self, index=0):
         '''
         Deletes a ROI from the annotation
         
@@ -218,7 +224,7 @@ class Annotation(object):
         # Separate different elements
         newline_byte = string_to_bytearray('\n')
         
-        hex_list = [self.size().to_bytes(2, 'big'), newline_byte]
+        hex_list = [int_to_bytearray(self.size()), newline_byte]
         hex_list += [int_to_bytearray(self.rotation), newline_byte]
 
         for i, roi in enumerate(self.roi):
@@ -229,7 +235,7 @@ class Annotation(object):
        
     
 def SaveOAF(filename, annotations, file_list, class_list, colorspace, 
-            current_file, version=1):
+            current_file, version=1, testing=False):
     '''
     Custom savefile that will be robust to additional changes, i.e., that
     is backwards compatible to older versions.
@@ -276,7 +282,9 @@ def SaveOAF(filename, annotations, file_list, class_list, colorspace,
     version : STRING (Default is 1)
         This will add a version control to the savefile for future
         backwards compatibility purposes
-
+    testing : BOOLEAN (Default is False)
+        This is used for testing purposes only.
+        
     Returns
     -------
     None.
@@ -313,12 +321,15 @@ def SaveOAF(filename, annotations, file_list, class_list, colorspace,
         hex_list += [colorname_byte, newline_byte] 
 
     # Write .OAF file
-    with open(filename, 'wb') as f:
-        for h in hex_list:
-            f.write(h)
+    if testing:
+        return hex_list
+    else:
+        with open(filename, 'wb') as f:
+            for h in hex_list:
+                f.write(h)
 
 
-def LoadOAF(filename):       
+def LoadOAF(filename, bytes_list=None):       
     '''
     Load .OAF file 
     
@@ -328,10 +339,8 @@ def LoadOAF(filename):
     ----------
     filename : STRING
         File path/name to save the OpenAnnotation File
-
-    version : STRING (Default is 1)
-        This will add a version control to the savefile for future
-        backwards compatibility purposes
+    bytes_list : List of bytearrays
+        This is only used for testing
 
     Returns
     -------
@@ -350,8 +359,9 @@ def LoadOAF(filename):
     '''
     
     # Load all data from .OAF file
-    with open(filename, 'rb') as f:
-        bytes_list = f.readlines()
+    if not bytes_list:
+        with open(filename, 'rb') as f:
+            bytes_list = f.readlines()
     
     # Grab .OAF format version (this will be used later for backwards 
     # compatability)
@@ -391,34 +401,4 @@ def LoadOAF(filename):
         class_list.append(bytes_list.pop(0).split(b'\n')[0].decode())
         colorspace.append(bytes_list.pop(0).split(b'\n')[0].decode())
     
-    
     return annotations, file_list, class_list, colorspace, current_file
-
-if __name__ == '__main__':
-    
-    import random
-    
-    annotations = []
-    file_list = []
-    class_list = ['winston', 'prince', 'duckie']
-    colorspace = ['blue', 'green', 'red']
-    current_file = 4
-    filename = 'tempfile.oaf'
-    
-    for i in range(5):
-        a = Annotation()
-        a.rotation = 3
-        file_list.append('file%d.jpg' % i)
-        for p in range(3):
-            roi = ROI()
-            roi.push(0,0)
-            roi.push(100.0,100.0)
-            a.push(roi, random.randint(0,2))
-        annotations.append(a)
-
-    SaveOAF(filename, annotations, file_list, class_list, colorspace, 
-            current_file)
-    
-    annotations1, file_list1, class_list1, colorspace1, current_file1 =\
-        LoadOAF(filename)
-            

@@ -25,10 +25,43 @@ class AnnotationTool(object):
         Parameters
         ----------
         None
-        
+    
+        Attributes
+        ----------
+        file_ext : list (Default = ['.jpg', '.png']) 
+            Image file extensions currently supported by OpenAnnotation
+        window_size_strings : list (Default = ["1024x768", "800x600"])
+            These are the supported Window Sizes.
+        window_size_index : int
+            Which window size in window_size_strings is currently selected
+        window_width : int
+            The number of pixels the window width is
+        window_height : int
+            The number of pixels the window height is
+        toolbar_width : int
+            The number of pixels the Toolbar width is
+        footer_height : int
+            The number of pixels the footer height is
+        canvas_width : int
+            The remaining window size is for the Canvas object
+        canvas_height : int
+            The remaining window size is for the Canvas object
+        project_open : bool
+            This tracks if the project is open for display purposes
+        saved : bool
+            This tracks if the current project is saved
+        app_menu : The OpenAnnotation AppMenu object
+            Initialize the menu across the top of the window
+        top_colors : list
+            The default colors are blue, red, green, cyan, yellow, and magenta
+                
+        Raises
+        ------
+        None
+    
         Returns
         -------
-        None.
+        None
 
         '''
         self.file_ext = ['.jpg', '.png']
@@ -47,11 +80,35 @@ class AnnotationTool(object):
                            '#FF00FF', '#FFFF00'] 
 
     def load_app(self, test=False):
+        '''
+        This loads the main window for the OpenAnnotation applications
         
+        Parameters
+        ----------
+        test : bool (Default = False)
+            If test=True, then the window is not actually drawn
+    
+        Attributes
+        ----------
+        window : tkinter Tk object
+            This is the main application window
+        background : tkinter Frame object
+            This is the frame that covers the entire window object
+                
+        Raises
+        ------
+        None
+    
+        Returns
+        -------
+        complete : bool
+            Returns True for unittesting
+
+        '''        
         # Build Window
         self.window = tk.Tk()
             
-        self.window.title("Image Annotation Tool")  # to define the title
+        self.window.title("OpenAnnotation 0.1")  # to define the title
         self.window.geometry("%dx%d" % (self.window_width,self.window_height))
         self.app_menu._draw_menu()
                    
@@ -61,30 +118,30 @@ class AnnotationTool(object):
         self.background.pack()
                 
         # Create Load Screen Buttons
-        self.new_button = Button(self.background, text="New Blank Project", 
+        new_button = Button(self.background, text="New Blank Project", 
                             width = 20,
                             height=3, 
                             command=self.app_menu._new)
-        self.new_button.grid(row=0, column=0, sticky='n', pady=2 )
+        new_button.grid(row=0, column=0, sticky='n', pady=2 )
 
-        self.new_wiz_button = Button(self.background, 
+        new_wiz_button = Button(self.background, 
                                      text="New Project Wizard", 
                                      width = 20,
                                      height=3, 
                                      command=self.app_menu._new_project_wizard)
-        self.new_wiz_button.grid(row=1, column=0, sticky='n', pady=2 )
+        new_wiz_button.grid(row=1, column=0, sticky='n', pady=2 )
 
-        self.load_button = Button(self.background, text="Load Project", 
+        load_button = Button(self.background, text="Load Project", 
                             width=20,
                             height=3, 
                             command=self.app_menu._open)
-        self.load_button.grid(row=2, column=0, sticky='n', pady=2)
+        load_button.grid(row=2, column=0, sticky='n', pady=2)
 
-        self.quit_button = Button(self.background, text="Quit", 
+        quit_button = Button(self.background, text="Quit", 
                             width=20, 
                             height=3, 
                             command=self.app_menu._quit)
-        self.quit_button.grid(row=3, column=0, sticky='n', pady=2)
+        quit_button.grid(row=3, column=0, sticky='n', pady=2)
         
         if not test:
             self.window.mainloop()
@@ -92,12 +149,62 @@ class AnnotationTool(object):
         return True
         
     def _draw_object_class_manager(self):
+        '''
+        This draws the Object Class Management Tool in a popup window
         
+        Parameters
+        ----------
+        None
+    
+        Attributes
+        ----------
+        obj_mgr : OpenAnnotation ObjectClassManager object
+            This is the Object Class Management tool accessible from the
+            toolbar up top
+                
+        Raises
+        ------
+        None
+    
+        Returns
+        -------
+        complete : bool
+            Returns True for unittesting
+
+        '''          
         self.obj_mgr = ObjectClassManager(self)
         return True
         
     def _draw_workspace(self):
+        '''
+        This draws the main project in the background frame
         
+        Parameters
+        ----------
+        None
+    
+        Attributes
+        ----------
+        background : tkinter Frame object
+            This is the frame that covers the entire window object
+        canvas : tkinter Canvas object
+            This is what the image is drawn on
+        aspect_ratio : float
+            Compute the scale factor to shrink/increase the image to fit in
+            the canvas
+        boxes : list
+            A list for the OpenAnnotation InteractiveBox objects
+            
+        Raises
+        ------
+        None
+    
+        Returns
+        -------
+        complete : bool
+            Returns True for unittesting
+    
+        '''         
         self.app_menu._draw_menu()
         
         self.background.destroy()
@@ -116,16 +223,16 @@ class AnnotationTool(object):
         toolbar = Toolbar(self)
         
         # Draw Canvas on Right        
-        self.canvas_frame = Frame(self.background, bg='green',
+        canvas_frame = Frame(self.background, bg='green',
                     width=self.canvas_width,
                     height=self.canvas_height)
-        self.canvas_frame.place(x=self.toolbar_width,
+        canvas_frame.place(x=self.toolbar_width,
                                 y=0, 
                                 width = self.canvas_width,
                                 height = self.canvas_height,
                                 )
         
-        self.canvas = Canvas(self.canvas_frame,
+        self.canvas = Canvas(canvas_frame,
                                    width=self.canvas_width, 
                                    height=self.canvas_height)
         self.canvas.place(x=0,
@@ -193,6 +300,35 @@ class AnnotationTool(object):
         return True
 
     def _on_click(self, event):
+        '''
+        This handles the click-hold Event
+        
+        Parameters
+        ----------
+        event : tkinter Event
+            Event that handles the mouse being clicked, creating the first of
+            two bounding box corners
+    
+        Attributes
+        ----------
+        clicked : tuple
+            The (x,y) coordinate for the mouse click event
+        box_resize_mode : string
+            Defines the type of box action that will occur.  Options are
+            'RIGHT', 'LEFT', 'TOP', 'BOTTOM', or 'NEW'.
+        resize_box_id : int
+            This is which ROI object has been clicked on
+            
+        Raises
+        ------
+        None
+    
+        Returns
+        -------
+        complete : bool
+            Returns True for unittesting
+    
+        '''    
         
         self.clicked = (event.x, event.y)
         

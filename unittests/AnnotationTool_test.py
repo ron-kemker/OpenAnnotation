@@ -55,10 +55,6 @@ class TestAnnotationTool(unittest.TestCase):
         tool = AnnotationTool()
         self.assertFalse(hasattr(tool, 'window'))
         self.assertFalse(hasattr(tool, 'background'))
-        self.assertFalse(hasattr(tool, 'new_button'))
-        self.assertFalse(hasattr(tool, 'new_wiz_button'))
-        self.assertFalse(hasattr(tool, 'load_button'))       
-        self.assertFalse(hasattr(tool, 'quit_button'))
         
         # Make sure function runs to completion
         complete = tool.load_app(True)
@@ -67,10 +63,6 @@ class TestAnnotationTool(unittest.TestCase):
         # Now check to make sure the initial buttons are in place
         self.assertTrue(hasattr(tool, 'window'))
         self.assertTrue(hasattr(tool, 'background'))
-        self.assertTrue(hasattr(tool, 'new_button'))
-        self.assertTrue(hasattr(tool, 'new_wiz_button'))
-        self.assertTrue(hasattr(tool, 'load_button'))       
-        self.assertTrue(hasattr(tool, 'quit_button'))
         tool.window.destroy()
 
     def test_draw_object_class_manager(self):
@@ -104,7 +96,6 @@ class TestAnnotationTool(unittest.TestCase):
         self.assertTrue(complete)
         self.assertTrue(hasattr(tool, 'background'))
         self.assertTrue(hasattr(tool, 'app_menu'))
-        self.assertTrue(hasattr(tool, 'canvas_frame'))
         self.assertTrue(hasattr(tool, 'canvas'))
         self.assertFalse(hasattr(tool, 'aspect_ratio'))
         self.assertFalse(hasattr(tool, 'boxes'))
@@ -133,7 +124,6 @@ class TestAnnotationTool(unittest.TestCase):
         self.assertTrue(complete)
         self.assertTrue(hasattr(tool, 'background'))
         self.assertTrue(hasattr(tool, 'app_menu'))
-        self.assertTrue(hasattr(tool, 'canvas_frame'))
         self.assertTrue(hasattr(tool, 'canvas'))
         self.assertTrue(hasattr(tool, 'aspect_ratio'))
         self.assertTrue(hasattr(tool, 'boxes'))        

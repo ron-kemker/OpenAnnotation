@@ -9,11 +9,13 @@ import unittest
 
 from AnnotationTool_test import TestAnnotationTool
 from menu_test import TestMenu
+from options_test  import TestOptionPrompt
 from fileio_test import TestFileIO
 
 if __name__ == '__main__':
     # Unit Tests
     TestAnnotationTool()
     TestMenu()
+    TestOptionPrompt()
     TestFileIO()
     unittest.main()

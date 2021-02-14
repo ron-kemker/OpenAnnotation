@@ -33,16 +33,30 @@ class ROI(object):
         box that has all edges parallel to the X-Y axes.  A ROI with three or
         more points is a multi-sided polygon.
                 
+        Parameters
+        ----------
+        None
+    
+        Attributes
+        ----------
+        points : list
+            These are the coordinates for a single ROI.
+            
+        Raises
+        ------
+        None
+    
         Returns
         -------
-        None.
-        '''        
+        None
+        '''  
+        
         self.points = []
     
     def push(self, x, y):
         '''
-        The Annotation object contains all of the relevant information for a
-        single annotation.
+        Add a list that contains the [x,y] pair into the list of ROI
+        coordinates.
         
         Parameters
         ----------
@@ -50,6 +64,14 @@ class ROI(object):
             x-coordinate
         y : FLOAT32
             y-cooridnate
+
+        Attributes
+        ----------
+        None
+
+        Raises
+        ------
+        None   
 
         Returns
         -------
@@ -66,6 +88,14 @@ class ROI(object):
         ----------
         None
 
+        Attributes
+        ----------
+        None
+
+        Raises
+        ------
+        None        
+
         Returns
         -------
         size : INT
@@ -79,6 +109,14 @@ class ROI(object):
         Helper function to assist with the InteractiveBox object.  
         TODO: Integrate InteractiveBox with this Annotation object
 
+        Parameters
+        ----------
+        None
+        
+        Attributes
+        ----------
+        None        
+        
         Raises
         ------
         ValueError
@@ -119,9 +157,22 @@ class ROI(object):
         xN (float32)
         yN (float32)
         
+        Parameters
+        ----------
+        None
+
+        Attributes
+        ----------
+        None
+
+        Raises
+        ------
+        None
+        
         Returns
-        -------
-        None.
+        -------        
+        hex_list : list
+            Contains a list of bytearrays that describes the entire ROI object
 
         '''
 
@@ -142,7 +193,27 @@ class Annotation(object):
         '''
         The Annotation object contains all of the relevant information for a
         single annotation.
-                
+        
+        Parameters
+        ----------
+        None
+
+        Attributes
+        ----------
+        roi : list
+            Empty list that will contain ROI objects
+            
+        label : list
+            Empty list that will contain integers that correspond to object
+            classes
+            
+        rotation : integer
+            Indicates how the image needs to be rotated to be upright
+
+        Raises
+        ------
+        None   
+        
         Returns
         -------
         None.
@@ -158,14 +229,22 @@ class Annotation(object):
         
         Parameters
         ----------
-        roi : LIST of ROI Objects
-            [(x0, y0), (x1, y1), ..., (xn, yn)]
-        label : LIST of INTs
+        roi : ROI object
+            Contains the ROI object that describes an annotation
+        label : int
             The truth label for each corresponding ROI
+
+        Attributes
+        ----------
+        None
+
+        Raises
+        ------
+        None   
+        
         Returns
         -------
         None.
-    
         '''              
         self.roi.append(roi)
         self.label.append(label)
@@ -176,9 +255,17 @@ class Annotation(object):
         
         Parameters
         ----------
-        index : INT
+        index : INT (default=0)
             The index of the ROI to be deleted
-            
+       
+        Attributes
+        ----------
+        None
+
+        Raises
+        ------
+        None   
+        
         Returns
         -------
         None.
@@ -190,7 +277,18 @@ class Annotation(object):
     def size(self):
         '''
        Number of ROIs in an image
-        
+
+        Parameters
+        ----------
+        None
+       
+        Attributes
+        ----------
+        None
+
+        Raises
+        ------
+        None           
 
         Returns
         -------
@@ -216,10 +314,22 @@ class Annotation(object):
         ROI N
         label N        
 
+        Parameters
+        ----------
+        None
+       
+        Attributes
+        ----------
+        None
+
+        Raises
+        ------
+        None           
+
         Returns
         -------
-        None.
-
+        hex_list : list
+            A list of bytearray objects that describes the annotation object
         '''
         # Separate different elements
         newline_byte = string_to_bytearray('\n')
@@ -285,10 +395,14 @@ def SaveOAF(filename, annotations, file_list, class_list, colorspace,
     testing : BOOLEAN (Default is False)
         This is used for testing purposes only.
         
+    Raises
+    ------
+    None           
+
     Returns
     -------
-    None.
-
+    hex_list : list
+        The hex_list is returned for unittesting only
     '''
 
     # Separate different elements
@@ -340,7 +454,12 @@ def LoadOAF(filename, bytes_list=None):
     filename : STRING
         File path/name to save the OpenAnnotation File
     bytes_list : List of bytearrays
-        This is only used for testing
+        This is a bytearray of an entire OpenAnnotation Formatted project that
+        is used only for unittesting.
+
+    Raises
+    ------
+    None  
 
     Returns
     -------

@@ -354,7 +354,30 @@ class AnnotationTool(object):
         return True
     
     def _on_release(self, event):
+        '''
+        This handles when the mouse left-button has been released, which adds
+        a new bounding box or resizes an existing box.
         
+        Parameters
+        ----------
+        event : tkinter Event
+            Event that handles the mouse being clicked, creating the first of
+            two bounding box corners
+    
+        Attributes
+        ----------
+        None
+            
+        Raises
+        ------
+        None
+    
+        Returns
+        -------
+        complete : bool
+            Returns True for unittesting
+    
+        '''            
         if self.box_resize_mode == 'NEW':
 
             top = min(self.clicked[1], event.y)
@@ -387,7 +410,33 @@ class AnnotationTool(object):
         return True
         
     def _on_move_press(self, event):
+        '''
+        This handles the event where the mouse left-button is held down and 
+        the cursor is moved across the screen.
         
+        Parameters
+        ----------
+        event : tkinter Event
+            Event that handles the mouse being clicked, creating the first of
+            two bounding box corners
+    
+        Attributes
+        ----------
+        rect : tkinter Canvas create_rectangle object
+            The bounding box that will be drawn on the Canvas
+        box_end : tuple
+            The (x,y) coordinate for the mouse motion event
+            
+        Raises
+        ------
+        None
+    
+        Returns
+        -------
+        complete : bool
+            Returns True for unittesting
+    
+        '''            
         if hasattr(self, 'resize_box_id'):
             box_id = self.resize_box_id
         
@@ -454,15 +503,56 @@ class AnnotationTool(object):
 
         
     def _load_image_from_file(self):
+        '''
+        This uses PIL to load the current Image displayed in the project
+        
+        Parameters
+        ----------
+        None
+    
+        Attributes
+        ----------
+        img : PIL Image object
+            The Image is opened and rotated upright using EXIF metadata
+            
+        Raises
+        ------
+        None
+    
+        Returns
+        -------
+        complete : bool
+            Returns True for unittesting
+    
+        '''   
         self.img = Image.open(self.file_list[self.current_file])
-        self.file_list[self.current_file]
         
         rot = self.annotations[self.current_file].rotation
         if rot > 0:
             self.img = self.img.transpose(rot)
                 
     def _reset_image(self):
+        '''
+        This deletes all annotations made on a given image
         
+        Parameters
+        ----------
+        None
+    
+        Attributes
+        ----------
+        None
+            
+        Raises
+        ------
+        None
+    
+        Returns
+        -------
+        complete : bool
+            Returns True for unittesting
+    
+        '''           
         for lbl in self.annotations[self.current_file].label:
             self.class_count[lbl] = self.class_count[lbl] - 1
         

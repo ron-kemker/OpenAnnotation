@@ -120,9 +120,11 @@ class Toolbar(object):
  
             left_arrow = Image.open('img/left_arrow.png')
             right_arrow = ImageOps.mirror(left_arrow)      
-            left_photo = ImageTk.PhotoImage(left_arrow.resize((button_size,button_size), 
+            left_photo = ImageTk.PhotoImage(left_arrow.resize((button_size,
+                                                               button_size), 
                                               Image.ANTIALIAS))
-            right_photo = ImageTk.PhotoImage(right_arrow.resize((button_size,button_size), 
+            right_photo = ImageTk.PhotoImage(right_arrow.resize((button_size,
+                                                                 button_size), 
                                                   Image.ANTIALIAS))
         else:
             left_photo = None

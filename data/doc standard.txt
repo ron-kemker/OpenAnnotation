@@ -1,0 +1,24 @@
+    '''
+    Function Description
+      
+    Parameters
+    ----------
+    variable : dtype (default=value)
+        DESCRIPTION.
+
+    Attributes
+    ----------
+    variable : dtype 
+        DESCRIPTION.
+        
+    Raises
+    ------
+    ErrorType
+        DESCRIPTION.
+
+    Returns
+    -------
+    variable : dtype
+        DESCRIPTION.
+        
+    '''

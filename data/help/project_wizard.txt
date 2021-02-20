@@ -11,7 +11,7 @@ New Project with the "New Project Wizard"
     change the color, click on the colored box next to the class and a popup 
     dialog will appear to change the color.
 
-5. After the classes and files have been added to the project, you can click
+4. After the classes and files have been added to the project, you can click
     the green button which will build the project.  Follow Steps 5-8 in the
     "Starting a New Project" tutorial to begin your annotation effort.
 

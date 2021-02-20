@@ -2,7 +2,7 @@
 """
 Created on Sat Jan 30 08:49:14 2021
 
-@author: Master
+@author: Ronald Kemker
 """
 
 
@@ -62,9 +62,9 @@ class HelpMenu(object):
         self.background.pack()
         
         # Navigation toolbar on the left
-        self.left_pane = Frame(self.background, width=self.left_pane_width,
+        left_pane = Frame(self.background, width=self.left_pane_width,
                                height = self.window_height, bg='white')
-        self.left_pane.place(x=0, y=0, width=self.left_pane_width, 
+        left_pane.place(x=0, y=0, width=self.left_pane_width, 
                              height=self.window_height)
         
         # Text from the individual tutorial goes on the right.
@@ -76,9 +76,13 @@ class HelpMenu(object):
                               height=self.window_height)
         
         # Open the .txt file containing the tutorial item
-        self.help_files = glob('data/help/*.txt')
+        if self.root.window.winfo_ismapped():
+            self.help_files = glob('data/help/*.txt')
+        else:
+            self.help_files = glob('../data/help/*.txt')
+           
         
-        label = Label(self.left_pane, 
+        label = Label(left_pane, 
                       text='Navigation Bar', 
                       bg='white', 
                       width=self.left_pane_width,
@@ -96,7 +100,7 @@ class HelpMenu(object):
             f.close()
             
             # Add a Navigation Button on the left
-            button = Button(self.left_pane, 
+            button = Button(left_pane, 
                           text="\u2022  "+lines[0][:-1],
                           width=self.left_pane_width, 
                           justify='left',

@@ -299,7 +299,9 @@ class Toolbar(object):
         
         Attributes
         ----------
-        None
+        selected_class : tkinter StringVar object
+            This is the variable assigned to the object class selection drop
+            down menu
         
         Raises
         ------

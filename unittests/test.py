@@ -11,6 +11,7 @@ from AnnotationTool_test import TestAnnotationTool
 from menu_test import TestMenu
 from options_test  import TestOptionPrompt
 from fileio_test import TestFileIO
+from help_test import TestHelp
 
 if __name__ == '__main__':
     # Unit Tests
@@ -18,4 +19,6 @@ if __name__ == '__main__':
     TestMenu()
     TestOptionPrompt()
     TestFileIO()
+    TestHelp()
+    
     unittest.main()

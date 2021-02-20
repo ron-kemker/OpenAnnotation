@@ -525,7 +525,12 @@ class AnnotationTool(object):
             Returns True for unittesting
     
         '''   
-        self.img = Image.open(self.file_list[self.current_file])
+
+        if self.window.winfo_ismapped():
+            self.img = Image.open(self.file_list[self.current_file])
+        else:
+            self.img = Image.new('RGB', (self.canvas_width, 
+                                         self.canvas_height))
         
         rot = self.annotations[self.current_file].rotation
         if rot > 0:

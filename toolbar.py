@@ -274,8 +274,7 @@ class Toolbar(object):
             
         '''        
         
-        for lbl in self.root_app.annotations[self.root_app.current_file].label:
-            idx = self.class_list.index(lbl)
+        for idx in self.root_app.annotations[self.root_app.current_file].label:
             self.root_app.class_count[idx] = self.root_app.class_count[idx] - 1
         
         self.root_app.annotations.pop(self.root_app.current_file)
@@ -316,7 +315,9 @@ class Toolbar(object):
         frame_height = 70
         label_height = 20
         
-        frame = Frame(self.toolbar_frame, bg='black')
+        frame = Frame(self.toolbar_frame, bg='black',
+                    height=frame_height,
+                    width = self.toolbar_width)
         frame.place(x=0,
                     y=self.toolbar_cumulative_height,
                     height=frame_height,

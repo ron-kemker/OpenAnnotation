@@ -13,6 +13,7 @@ from toolbar_test import TestToolbar
 from options_test  import TestOptionPrompt
 from fileio_test import TestFileIO
 from help_test import TestHelp
+from objectclassmanager_test import TestObjectClassManager
 
 if __name__ == '__main__':
     # Unit Tests
@@ -22,7 +23,7 @@ if __name__ == '__main__':
     TestOptionPrompt()
     TestFileIO()
     TestHelp()
-    #TestObjectClassManager()
+    TestObjectClassManager()
     #TestInteractiveBox()
     #TestProjectWizard
     

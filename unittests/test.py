@@ -14,6 +14,7 @@ from options_test  import TestOptionPrompt
 from fileio_test import TestFileIO
 from help_test import TestHelp
 from objectclassmanager_test import TestObjectClassManager
+from interactivebox_test import TestInteractiveBox
 
 if __name__ == '__main__':
     # Unit Tests
@@ -24,7 +25,7 @@ if __name__ == '__main__':
     TestFileIO()
     TestHelp()
     TestObjectClassManager()
-    #TestInteractiveBox()
+    TestInteractiveBox()
     #TestProjectWizard
     
     # TODO: Integration Testing

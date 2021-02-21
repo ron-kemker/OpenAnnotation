@@ -264,7 +264,7 @@ class TestObjectClassManager(unittest.TestCase):
         self.assertEqual(tool.class_count[-1], 15)
         self.assertEqual(tool.colorspace[-1], '#FF0000')
         self.assertEqual(len(tool.top_colors_used) , 2)
-        self.assertEqual(len(tool.top_colors_free) , 4)
- 
+        self.assertEqual(len(tool.top_colors_free) , 4)  
+    
 if __name__ == '__main__':
     unittest.main()

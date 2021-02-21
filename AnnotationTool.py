@@ -288,7 +288,7 @@ class AnnotationTool(object):
                 color = self.colorspace[lbl]
                 
                 box = InteractiveBox(self, left, top, right, bottom, color)
-                box.draw_box(self, i)
+                box.draw_box(i)
                 self.boxes.append(box)
             
         # Only allow bounding boxes to be drawn if they can be tied to a class
@@ -391,7 +391,7 @@ class AnnotationTool(object):
             
             self.canvas.delete(self.rect)
             del self.rect
-            box.draw_box(self, len(self.annotations[self.current_file].roi))
+            box.draw_box(len(self.annotations[self.current_file].roi))
             
             top = self.aspect_ratio * top
             bottom = self.aspect_ratio * bottom

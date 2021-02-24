@@ -249,10 +249,11 @@ class AppMenu(object):
 
         Parameters
         ----------
-        file : STRING
+        file : STRING (default=None)
             This is only used for testing purposes
-        meta : exif.Image object
+        meta : exif.Image object (default=None)
             This is only used for testing purposes
+
         
         Returns
         -------

@@ -3,7 +3,7 @@ Open-Source Annotation Tool for Computer Vision Projects
  
 By [Ronald Kemker](https://www.linkedin.com/in/ronald-kemker-66250b115)
 
-## Current Version: 0.1 (Beta Release)
+## Current Version: 0.2
 - Projects support multi-class bounding box annotation
 - Export projects to CSV (for future use)
 

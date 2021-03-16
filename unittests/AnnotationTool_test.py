@@ -40,11 +40,13 @@ class TestAnnotationTool(unittest.TestCase):
         # Initial Numerical Objects
         self.assertEqual(tool.window_width, 1024)
         self.assertEqual(tool.window_height, 768)
-        self.assertEqual(tool.toolbar_width, 150)
-        self.assertEqual(tool.footer_height, 25)
-        self.assertEqual(tool.canvas_width, 874)
-        self.assertEqual(tool.canvas_height, 743)
+        self.assertEqual(tool.toolbar_height, 50)
+        self.assertEqual(tool.navigator_width, 200)
+        self.assertEqual(tool.canvas_width, 824)
+        self.assertEqual(tool.canvas_height, 718)
         self.assertEqual(tool.window_size_index , 0)
+        self.assertEqual(tool.page, 0)
+        self.assertEqual(tool.img_per_page , 50)
 
         # Make sure Appmenu has correct "root_app"
         self.assertEqual(tool, tool.app_menu.root_app)
@@ -96,6 +98,46 @@ class TestAnnotationTool(unittest.TestCase):
         self.assertTrue(complete)
         self.assertTrue(hasattr(tool, 'background'))
         self.assertTrue(hasattr(tool, 'app_menu'))
+
+        # Annotation added
+        tool.annotations = []
+        tool.file_list = []
+        tool.class_list = ['winston', 'prince', 'duckie']
+        tool.colorspace = ['blue', 'green', 'red']
+        tool.current_file = 0
+        tool.img = MockImg()
+    
+        for i in range(5):
+            a = Annotation()
+            a.rotation = 3
+            tool.file_list.append('file%d.jpg' % i)
+            for p in range(3):
+                roi = ROI()
+                roi.push(0,0)
+                roi.push(100.0,100.0)
+                a.push(roi, random.randint(0,2))
+            tool.annotations.append(a)
+            
+        complete = tool._draw_workspace()
+        self.assertTrue(complete)
+        self.assertTrue(hasattr(tool, 'background'))
+        self.assertTrue(hasattr(tool, 'app_menu'))
+        tool.window.destroy()
+
+    def test_draw_canvas(self):
+        
+        class MockImg(object):
+            def __init__(self):
+                self.size = [640, 480]
+        
+        tool = AnnotationTool()
+        tool.load_app(True)
+        tool.annotations = []
+        tool.class_list = []
+        
+        # Empty Project
+        complete = tool.draw_canvas()
+        self.assertTrue(complete)
         self.assertTrue(hasattr(tool, 'canvas'))
         self.assertFalse(hasattr(tool, 'aspect_ratio'))
         self.assertFalse(hasattr(tool, 'boxes'))
@@ -120,14 +162,12 @@ class TestAnnotationTool(unittest.TestCase):
                 a.push(roi, random.randint(0,2))
             tool.annotations.append(a)
             
-        complete = tool._draw_workspace()
+        complete = tool.draw_canvas()
         self.assertTrue(complete)
-        self.assertTrue(hasattr(tool, 'background'))
-        self.assertTrue(hasattr(tool, 'app_menu'))
         self.assertTrue(hasattr(tool, 'canvas'))
         self.assertTrue(hasattr(tool, 'aspect_ratio'))
         self.assertTrue(hasattr(tool, 'boxes'))        
-        self.assertEqual(tool.aspect_ratio, 640/(1024-150))
+        self.assertEqual(tool.aspect_ratio, 640/(1024-200))
         self.assertEqual(3, len(tool.boxes))
         tool.window.destroy()
 

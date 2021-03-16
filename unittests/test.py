@@ -16,6 +16,7 @@ from help_test import TestHelp
 from objectclassmanager_test import TestObjectClassManager
 from interactivebox_test import TestInteractiveBox
 from project_wizard_test import TestProjectWizard
+from navigator_test import TestNavigator
 
 if __name__ == '__main__':
     # Unit Tests
@@ -28,6 +29,7 @@ if __name__ == '__main__':
     TestObjectClassManager()
     TestInteractiveBox()
     TestProjectWizard()
+    TestNavigator()
     
     # TODO: Integration Testing
     

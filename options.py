@@ -120,9 +120,9 @@ class OptionPrompt(object):
         self.root_app.window_width = int(new_size[0])
         self.root_app.window_height = int(new_size[1])
         self.root_app.canvas_width = self.root_app.window_width -\
-            self.root_app.toolbar_width
+            self.root_app.navigator_width
         self.root_app.canvas_height = self.root_app.window_height -\
-            self.root_app.footer_height
+            self.root_app.toolbar_height
         
         # Redraw the Window
         self.root_app._draw_workspace()

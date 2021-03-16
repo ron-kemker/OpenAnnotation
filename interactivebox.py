@@ -313,4 +313,4 @@ class InteractiveBox(object):
         lbl = self.root_app.annotations[image_id].label[box_id]
         self.root_app.annotations[image_id].pop(box_id)
         self.root_app.class_count[lbl] = self.root_app.class_count[lbl] - 1
-        self.root_app._draw_workspace()        
+        self.root_app.draw_canvas()        

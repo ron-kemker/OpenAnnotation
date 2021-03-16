@@ -7,6 +7,7 @@ Created on Sun Jan 10 08:19:21 2021
 
 from tkinter import Frame, Label, Button, StringVar, OptionMenu
 from PIL import ImageTk, Image, ImageOps
+from navigator import Navigator
 
 class Toolbar(object):
     
@@ -41,14 +42,12 @@ class Toolbar(object):
         '''         
 
         self.root_app = root_app
-        self.toolbar_width = self.root_app.toolbar_width
-        self.toolbar_height = self.root_app.window_height
-        
-        self.toolbar_cumulative_height = 0
+        self.toolbar_width = self.root_app.window_width
+        self.toolbar_height = self.root_app.toolbar_height
         
         # Tool Bar Frame
         self.toolbar_frame = Frame(self.root_app.background, 
-                                   bg='black',
+                                   bg='gray',
                                    width=self.toolbar_width,
                                    height=self.toolbar_height)
         self.toolbar_frame.place(x=0,
@@ -61,10 +60,11 @@ class Toolbar(object):
             self._draw_image_navigator()
             self._delete_from_project_button()
             
+            
             if len(self.root_app.class_list) > 0:
                 self._draw_class_selection_menu()
-          
-                
+
+       
     def _draw_image_navigator(self):
         '''
         Draws the image navigator inside the Toolbar Frame
@@ -75,9 +75,7 @@ class Toolbar(object):
         
         Attributes
         ----------
-        toolbar_cumulative_height : int
-            This is the vertical y-axis index for the lowest widget in the 
-            Toolbar project
+        None
         
         Raises
         ------
@@ -90,28 +88,24 @@ class Toolbar(object):
         '''    
 
         button_size = 40
-        top_label_height = 20
-        nav_frame_height = button_size + top_label_height + 5
         
-        nav_frame = Frame(self.toolbar_frame, bg='black', 
-                                     width=self.toolbar_width, 
-                                     height=nav_frame_height)
+        nav_frame = Frame(self.toolbar_frame, 
+                          width = self.root_app.navigator_width,
+                          height = self.toolbar_height)
         
-        nav_frame.place(x=0, y=0, height=nav_frame_height, 
-                        width = self.toolbar_width)
+        nav_frame.place(x=self.root_app.canvas_width-20,
+                        y=0, 
+                        width = self.root_app.navigator_width,
+                        height = self.toolbar_height
+                        )
         
-        label = Label(nav_frame, text="Image Navigator", bg='black',
-                      fg='white', font='Helvetica 12 bold')
-        label.place(x=0, y=0, height=top_label_height, 
-                    width=self.toolbar_width)
-
-        nav_text_label = Label(nav_frame, bg='black', 
+        nav_text_label = Label(nav_frame, 
                                 font='Helvetica 12 bold',
-                                fg='white',
-                                text="%d/%d" % (self.root_app.current_file+1, 
-                                                len(self.root_app.file_list)))
-        nav_text_label.place(x=0, y=top_label_height, 
-                                  width=self.toolbar_width, 
+                                justify='center',
+                                text="Page %d/%d" % (self.root_app.page+1, 
+                                               self.root_app.num_pages+1))
+        nav_text_label.place(x=0, y=5, 
+                                  width=self.root_app.navigator_width, 
                                   height=button_size)        
         
         
@@ -121,35 +115,40 @@ class Toolbar(object):
             left_arrow = Image.open('img/left_arrow.png')
             right_arrow = ImageOps.mirror(left_arrow)      
             left_photo = ImageTk.PhotoImage(left_arrow.resize((button_size,
-                                                               button_size), 
+                                                                button_size), 
                                               Image.ANTIALIAS))
             right_photo = ImageTk.PhotoImage(right_arrow.resize((button_size,
-                                                                 button_size), 
+                                                                  button_size), 
                                                   Image.ANTIALIAS))
         else:
             left_photo = None
             right_photo = None
             
         right_button = Button(nav_frame, image=right_photo, 
-                                   bg='black', command=self._next_image)
+                                    bg='black', command=self.next_page)
         right_button.image = right_photo
-        right_button.place(x=self.toolbar_width - button_size - 10, 
-                                y=top_label_height, 
+        right_button.place(x=150, 
+                                y=5, 
                                 width=button_size, 
                                 height=button_size)
         
 
         left_button = Button(nav_frame, image=left_photo, 
-                       bg='black', command=self._previous_image)
+                        bg='black', command=self.previous_page)
         left_button.image = left_photo
         left_button.place(x=10, 
-                               y=top_label_height, 
-                               width=button_size, 
-                               height=button_size)
+                                y=5, 
+                                width=button_size, 
+                                height=button_size)
         
 
-        self.toolbar_cumulative_height = self.toolbar_cumulative_height + \
-            nav_frame_height
+    def next_page(self):
+        self.root_app.page = min(self.root_app.page + 1, self.root_app.num_pages)
+        self.root_app._draw_workspace()
+    
+    def previous_page(self):
+        self.root_app.page = max(self.root_app.page - 1, 0)
+        self.root_app._draw_workspace()
 
 
     def _next_image(self):
@@ -229,27 +228,30 @@ class Toolbar(object):
             
         '''       
         
-        button_width = 120
-        button_height = 50
-                
-        frame = Frame(self.toolbar_frame, bg='black')
-        frame.place(x = 0, 
-                    y = self.toolbar_cumulative_height,
-                    width = self.toolbar_width,
-                    height = button_height + 20)
-        
-        button = Button(frame,
-                            text="Remove from Project",
-                            fg="black",
-                            command=self._delete_from_project)
-        
-        button.place(x=int(self.toolbar_width/2) - int(button_width/2), 
-                     y=10, 
-                     width=button_width, 
-                     height=button_height)
+        button_size = 40
 
-        self.toolbar_cumulative_height = self.toolbar_cumulative_height + \
-            button_height + 20
+
+        if self.root_app.window.winfo_ismapped():
+            img = Image.open('img/delete.png')
+            photo = ImageTk.PhotoImage(img.resize((button_size-1, 
+                                                   button_size-1), 
+                                              Image.ANTIALIAS)) 
+        else:
+            photo = None
+               
+        button = Button(self.toolbar_frame,
+                            image = photo,
+                            command=self._delete_from_project,
+                            width = button_size,
+                            height = button_size)
+        button.image = photo
+        
+        
+        button.place(x=10, 
+                     y=5, 
+                     width=button_size, 
+                     height=button_size)
+
 
     
     def _delete_from_project(self):
@@ -311,31 +313,13 @@ class Toolbar(object):
         None
             
         '''       
-        
-        frame_height = 70
-        label_height = 20
-        
-        frame = Frame(self.toolbar_frame, bg='black',
-                    height=frame_height,
-                    width = self.toolbar_width)
-        frame.place(x=0,
-                    y=self.toolbar_cumulative_height,
-                    height=frame_height,
-                    width = self.toolbar_width)
-
-        label = Label(frame, 
-                      text='Select Class', 
-                      bg='black',
-                      font='Helvetica 12 bold',
-                      fg='white')
-        label.place(x=0,y=0, height=label_height, width = self.toolbar_width)
-        
-        self.root_app.selected_class = StringVar(frame)
+               
+        self.root_app.selected_class = StringVar(self.toolbar_frame)
         self.root_app.selected_class.set(self.root_app.class_list[0])
-        option_menu = OptionMenu(frame, self.root_app.selected_class,
+        option_menu = OptionMenu(self.toolbar_frame, self.root_app.selected_class,
                                  *self.root_app.class_list)
     
-        option_menu.place(x=10, 
-                          y=label_height, 
-                          width = self.toolbar_width - 20, 
-                          height = frame_height-label_height)
+        option_menu.place(x=60, 
+                          y=5, 
+                          width = 100, 
+                          height = 40)

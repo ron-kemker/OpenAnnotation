@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+824# -*- coding: utf-8 -*-
 """
 Created on Thu Dec 31 09:26:18 2020
 
@@ -6,7 +6,7 @@ Created on Thu Dec 31 09:26:18 2020
 """
 
 import tkinter as tk
-from tkinter import Frame, Button, Canvas, Label
+from tkinter import Frame, Button, Canvas, Label, ttk
 from PIL import ImageTk, Image
 
 from menu import AppMenu
@@ -14,6 +14,7 @@ from objectclassmanager import ObjectClassManager
 from toolbar import Toolbar
 from interactivebox import InteractiveBox
 from fileio import ROI
+from navigator import Navigator
 
 class AnnotationTool(object):
     
@@ -38,10 +39,12 @@ class AnnotationTool(object):
             The number of pixels the window width is
         window_height : int
             The number of pixels the window height is
-        toolbar_width : int
-            The number of pixels the Toolbar width is
-        footer_height : int
-            The number of pixels the footer height is
+        page : int
+            The current page in the image Navigator
+        navigator_width : int
+            The number of images in the Image Navigator
+        toolbar_height : int
+            The number of pixels the Toolbar height is
         canvas_width : int
             The remaining window size is for the Canvas object
         canvas_height : int
@@ -69,16 +72,23 @@ class AnnotationTool(object):
         self.window_size_index = 0
         self.window_width = 1024
         self.window_height = 768
-        self.toolbar_width = 150
-        self.footer_height = 25
-        self.canvas_width = self.window_width - self.toolbar_width
-        self.canvas_height = self.window_height - self.footer_height
+
+        self.page = 0
+        self.img_per_page = 50
+
+        
+        self.toolbar_height = 50
+        self.navigator_width = 200      
+        
+        self.canvas_width = self.window_width - self.navigator_width
+        self.canvas_height = self.window_height - self.toolbar_height
+            
         self.project_open = False
         self.saved = True
         self.app_menu = AppMenu(self)
         self.top_colors = ['#0000FF', '#FF0000', '#00FF00', '#00FFFF', 
                            '#FF00FF', '#FFFF00'] 
-
+        
     def load_app(self, test=False):
         '''
         This loads the main window for the OpenAnnotation applications
@@ -187,13 +197,6 @@ class AnnotationTool(object):
         ----------
         background : tkinter Frame object
             This is the frame that covers the entire window object
-        canvas : tkinter Canvas object
-            This is what the image is drawn on
-        aspect_ratio : float
-            Compute the scale factor to shrink/increase the image to fit in
-            the canvas
-        boxes : list
-            A list for the OpenAnnotation InteractiveBox objects
             
         Raises
         ------
@@ -219,15 +222,56 @@ class AnnotationTool(object):
                               width = self.window_width,
                               height = self.window_height)
 
+        if self.annotations:
+            self.num_pages = int(len(self.annotations)/self.img_per_page)
+
         # Draw Toolbar on Left
         toolbar = Toolbar(self)
+           
+        # Draw Canvas on Right
+        self.draw_canvas()
+                        
+        if len(self.annotations):
+            self.navigator = Navigator(self)
+
+        return True
+
+
+    def draw_canvas(self):
+        '''
+        This draws the canvas in the main window.
+        
+        Parameters
+        ----------
+        None
+    
+        Attributes
+        ----------
+        canvas : tkinter Canvas object
+            This is what the image is drawn on
+        aspect_ratio : float
+            Compute the scale factor to shrink/increase the image to fit in
+            the canvas
+        boxes : list
+            A list for the OpenAnnotation InteractiveBox objects
+            
+        Raises
+        ------
+        None
+    
+        Returns
+        -------
+        complete : bool
+            Returns True for unittesting
+    
+        '''   
         
         # Draw Canvas on Right        
         canvas_frame = Frame(self.background, bg='green',
                     width=self.canvas_width,
                     height=self.canvas_height)
-        canvas_frame.place(x=self.toolbar_width,
-                                y=0, 
+        canvas_frame.place(x=0,
+                                y=self.toolbar_height, 
                                 width = self.canvas_width,
                                 height = self.canvas_height,
                                 )
@@ -240,24 +284,9 @@ class AnnotationTool(object):
                          width = self.canvas_width,
                          height = self.canvas_height,
                                 )
-        
-        footer_frame = Frame(self.background, 
-                             bg='black',
-                             height=self.footer_height,
-                             width=self.window_width,
-                             )
-        footer_frame.place(x=0, 
-                           y=self.canvas_height, 
-                           width=self.window_width,
-                           height = self.footer_height)
-        
-        footer_label = Label(footer_frame, 
-                              text='OpenAnnotation built by Ron Kemker',
-                              fg='white',
-                              bg='black')
-        footer_label.place(x=0, y=0)
-                
+                        
         if len(self.annotations):
+            
             self.aspect_ratio = max(self.img.size[0]/(self.canvas_width),
                                     self.img.size[1]/(self.canvas_height)) 
                                 
@@ -290,7 +319,7 @@ class AnnotationTool(object):
                 box = InteractiveBox(self, left, top, right, bottom, color)
                 box.draw_box(i)
                 self.boxes.append(box)
-            
+
         # Only allow bounding boxes to be drawn if they can be tied to a class
         if len(self.class_list) and len(self.annotations):        
             self.canvas.bind("<Button-1>",self._on_click)
@@ -298,6 +327,7 @@ class AnnotationTool(object):
             self.canvas.bind("<B1-Motion>", self._on_move_press)
 
         return True
+
 
     def _on_click(self, event):
         '''
@@ -404,7 +434,7 @@ class AnnotationTool(object):
             self.annotations[self.current_file].push(roi,label)
             
             self.class_count[label] = self.class_count[label] + 1
-        self._draw_workspace()
+        self.draw_canvas()
         self.saved = False
         self.box_resize_mode = 'NEW'
         return True

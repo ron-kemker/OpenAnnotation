@@ -22,12 +22,13 @@ class TestToolbar(unittest.TestCase):
         tool.file_list = []
         tool.class_list = ['winston', 'prince', 'duckie']
         tool.colorspace = ['#0000FF', '#FF0000', '#00FF00']
-        tool.current_file = 0        
+        tool.current_file = 0  
+        tool.num_pages = 1
         toolbar = Toolbar(tool)
 
         self.assertEqual(toolbar.root_app, tool)
-        self.assertEqual(toolbar.toolbar_width, tool.toolbar_width)
-        self.assertEqual(toolbar.toolbar_height, tool.window_height)
+        self.assertEqual(toolbar.toolbar_width, tool.window_width)
+        self.assertEqual(toolbar.toolbar_height, tool.toolbar_height)
         self.assertEqual(len(toolbar.toolbar_frame.winfo_children()), 0)
         
         
@@ -44,8 +45,8 @@ class TestToolbar(unittest.TestCase):
             
         toolbar = Toolbar(tool)
         self.assertEqual(toolbar.root_app, tool)
-        self.assertEqual(toolbar.toolbar_width, tool.toolbar_width)
-        self.assertEqual(toolbar.toolbar_height, tool.window_height)
+        self.assertEqual(toolbar.toolbar_width, tool.window_width)
+        self.assertEqual(toolbar.toolbar_height, tool.toolbar_height)
         self.assertEqual(len(toolbar.toolbar_frame.winfo_children()), 3)
 
     def test_draw_image_navigator(self):
@@ -58,7 +59,8 @@ class TestToolbar(unittest.TestCase):
         tool.class_list = ['winston', 'prince', 'duckie']
         tool.colorspace = ['#0000FF', '#FF0000', '#00FF00']
         tool.current_file = 0        
-       
+        tool.num_pages = 1
+        
         for i in range(5):
             a = Annotation()
             a.rotation = 3
@@ -74,9 +76,8 @@ class TestToolbar(unittest.TestCase):
         nav_frame = toolbar.toolbar_frame.winfo_children()[0]
         nav_frame_children = nav_frame.winfo_children()
         
-        self.assertEqual(len(nav_frame_children), 4)
-        self.assertEqual(nav_frame_children[0].cget('text'), "Image Navigator")
-        self.assertEqual(nav_frame_children[1].cget('text'), "1/5")
+        self.assertEqual(len(nav_frame_children), 3)
+        self.assertEqual(nav_frame_children[0].cget('text'), "Page 1/2")
         
     def test_next_image(self):
         tool = AnnotationTool()
@@ -88,7 +89,8 @@ class TestToolbar(unittest.TestCase):
         tool.class_list = ['winston', 'prince', 'duckie']
         tool.colorspace = ['#0000FF', '#FF0000', '#00FF00']
         tool.current_file = 0        
-       
+        tool.num_pages = 1
+        
         for i in range(5):
             a = Annotation()
             a.rotation = 3
@@ -118,7 +120,7 @@ class TestToolbar(unittest.TestCase):
         tool.class_list = ['winston', 'prince', 'duckie']
         tool.colorspace = ['#0000FF', '#FF0000', '#00FF00']
         tool.current_file = 0        
-       
+        tool.num_pages = 1
         for i in range(5):
             a = Annotation()
             a.rotation = 3
@@ -150,7 +152,8 @@ class TestToolbar(unittest.TestCase):
         tool.class_list = ['winston', 'prince', 'duckie']
         tool.colorspace = ['#0000FF', '#FF0000', '#00FF00']
         tool.current_file = 0        
-       
+        tool.num_pages = 1
+        
         for i in range(5):
             a = Annotation()
             a.rotation = 3
@@ -163,14 +166,11 @@ class TestToolbar(unittest.TestCase):
             tool.annotations.append(a) 
             
         toolbar = Toolbar(tool)
-        frame = toolbar.toolbar_frame.winfo_children()[1]
+        button = toolbar.toolbar_frame.winfo_children()[1]
         
-        self.assertEqual(len(frame.winfo_children()), 1)
-        self.assertEqual(frame.cget('bg'), 'black')
-        
-        button = frame.winfo_children()[0]
-        self.assertEqual(button.cget('text'), 'Remove from Project')        
-        self.assertEqual(button.cget('fg'), 'black')        
+        self.assertEqual(button.cget('text'), '')        
+        self.assertEqual(button.cget('width'), 40)        
+        self.assertEqual(button.cget('height'), 40)        
             
     def test_delete_from_project(self):
 
@@ -183,6 +183,7 @@ class TestToolbar(unittest.TestCase):
         tool.class_list = ['winston', 'prince', 'duckie']
         tool.colorspace = ['#0000FF', '#FF0000', '#00FF00']
         tool.current_file = 0
+        tool.num_pages = 1
         tool.class_count = [5, 5, 5]        
        
         for i in range(5):
@@ -217,6 +218,7 @@ class TestToolbar(unittest.TestCase):
         tool.class_list = ['winston', 'prince', 'duckie']
         tool.colorspace = ['#0000FF', '#FF0000', '#00FF00']
         tool.current_file = 0
+        tool.num_pages = 1
         tool.class_count = [5, 5, 5]        
        
         for i in range(5):
@@ -231,17 +233,10 @@ class TestToolbar(unittest.TestCase):
             tool.annotations.append(a) 
             
         toolbar = Toolbar(tool)        
-        frame = toolbar.toolbar_frame.winfo_children()[2]
-                
-        self.assertEqual(frame.cget('width'), toolbar.toolbar_width)
-        self.assertEqual(frame.cget('height'), 70)
-        self.assertEqual(frame.cget('bg'), 'black')
-        
-        frame_children = frame.winfo_children()
-
-        self.assertEqual(len(frame_children) , 2)
-        self.assertEqual(frame_children[0].cget('text'), 
-                         'Select Class')
+        option_menu = toolbar.toolbar_frame.winfo_children()[2]
+        self.assertEqual(option_menu.winfo_name(), '!optionmenu')
+      
+       
         
 if __name__ == '__main__':
     unittest.main()

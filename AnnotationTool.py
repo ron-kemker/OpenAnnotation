@@ -118,7 +118,7 @@ class AnnotationTool(object):
         # Build Window
         self.window = tk.Tk()
             
-        self.window.title("OpenAnnotation 0.2")  # to define the title
+        self.window.title("OpenAnnotation 0.2.1")  # to define the title
         self.window.geometry("%dx%d" % (self.window_width,self.window_height))
         self.app_menu._draw_menu()
                    
